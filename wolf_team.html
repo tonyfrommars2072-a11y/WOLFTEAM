@@ -1,0 +1,3993 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>WOLF TEAM — Command Center</title>
+
+  <style>
+    /* =====================================================================
+       1. MODERN COMMAND CENTER DESIGN TOKENS (DARK DEFAULT & LIGHT MODE)
+       ===================================================================== */
+    :root {
+      --font-system: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans Arabic", "Cairo", sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+      /* Light mode tokens */
+      --bg-app: #e9eff7;
+      --bg-surface: rgba(255, 255, 255, 0.92);
+      --bg-elevated: rgba(241, 246, 252, 0.95);
+      --bg-subtle: #dbe4f0;
+      --bg-hover: rgba(2, 132, 199, 0.09);
+
+      --text-primary: #071022;
+      --text-secondary: #2d3e56;
+      --text-muted: #5c708a;
+
+      --border: #c3d2e6;
+      --border-subtle: #dce6f2;
+
+      --accent: #0284c7;
+      --accent-hover: #0369a1;
+      --accent-glow: rgba(2, 132, 199, 0.28);
+      --accent-soft: rgba(2, 132, 199, 0.12);
+      --accent-contrast: #ffffff;
+
+      --success: #059669;
+      --success-soft: rgba(5, 150, 105, 0.14);
+      --warning: #d97706;
+      --warning-soft: rgba(217, 119, 6, 0.14);
+      --danger: #e11d48;
+      --danger-soft: rgba(225, 29, 72, 0.14);
+      --info: #2563eb;
+      --info-soft: rgba(37, 99, 235, 0.14);
+
+      --logo-halo: rgba(2, 132, 199, 0.24);
+      --logo-plate-bg: rgba(7, 16, 34, 0.88);
+      --logo-plate-border: rgba(2, 132, 199, 0.45);
+
+      --shadow-sm: 0 2px 8px rgba(7, 16, 34, 0.06);
+      --shadow-md: 0 12px 28px -8px rgba(7, 16, 34, 0.14);
+      --shadow-lg: 0 26px 60px -14px rgba(7, 16, 34, 0.24);
+
+      --topbar-h: 64px;
+      --mobile-nav-h: 64px;
+      --radius-sm: 9px;
+      --radius-md: 13px;
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+    }
+
+    html[data-theme="dark"] {
+      --bg-app: #050811;
+      --bg-surface: rgba(11, 18, 34, 0.9);
+      --bg-elevated: rgba(17, 27, 49, 0.92);
+      --bg-subtle: #192744;
+      --bg-hover: rgba(34, 211, 238, 0.11);
+
+      --text-primary: #f4f8ff;
+      --text-secondary: #cbd9ed;
+      --text-muted: #8699b8;
+
+      --border: #1e3052;
+      --border-subtle: #15233d;
+
+      --accent: #06b6d4;
+      --accent-hover: #22d3ee;
+      --accent-glow: rgba(34, 211, 238, 0.36);
+      --accent-soft: rgba(6, 182, 212, 0.16);
+      --accent-contrast: #03121d;
+
+      --success: #10b981;
+      --success-soft: rgba(16, 185, 129, 0.16);
+      --warning: #f59e0b;
+      --warning-soft: rgba(245, 158, 11, 0.16);
+      --danger: #f43f5e;
+      --danger-soft: rgba(244, 63, 94, 0.18);
+      --info: #38bdf8;
+      --info-soft: rgba(56, 189, 248, 0.16);
+
+      --logo-halo: rgba(34, 211, 238, 0.34);
+      --logo-plate-bg: rgba(8, 15, 30, 0.72);
+      --logo-plate-border: rgba(34, 211, 238, 0.36);
+
+      --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.45);
+      --shadow-md: 0 14px 32px -8px rgba(0, 0, 0, 0.65);
+      --shadow-lg: 0 28px 66px -14px rgba(0, 0, 0, 0.82);
+    }
+
+    /* =====================================================================
+       2. BASE RESET & ACCESSIBLE COMMAND-CENTER POLISH
+       ===================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: var(--font-system);
+      background-color: var(--bg-app);
+      color: var(--text-primary);
+      line-height: 1.5;
+      overflow-x: hidden;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--accent-hover);
+      outline-offset: 2px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(34, 211, 238, 0.25);
+      border-radius: var(--radius-full);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(34, 211, 238, 0.48);
+    }
+
+    /* =====================================================================
+       3. HIGH-VISIBILITY TRANSPARENT WOLF SHIELD LOGO & ADMIN BADGE
+       ===================================================================== */
+    .wolf-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      user-select: none;
+    }
+
+    .wolf-logo-frame {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: transparent;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .wolf-logo-frame:hover {
+      transform: translateY(-1px) scale(1.02);
+    }
+
+    .wolf-logo-frame.admin-badge {
+      padding: 3px;
+      border-radius: 14px;
+      background: var(--logo-plate-bg);
+      border: 1px solid var(--logo-plate-border);
+      box-shadow: 0 0 18px var(--logo-halo), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    }
+
+    .wolf-logo-frame.login-hero {
+      padding: 6px;
+      border-radius: 22px;
+      background: var(--logo-plate-bg);
+      border: 1px solid var(--logo-plate-border);
+      box-shadow: 0 0 32px var(--logo-halo), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .wolf-emblem-svg {
+      display: block;
+      background: transparent;
+      filter: drop-shadow(0 0 10px var(--logo-halo));
+      overflow: visible;
+    }
+
+    .wolf-emblem-svg.sm {
+      width: 34px;
+      height: 34px;
+    }
+
+    .wolf-emblem-svg.md {
+      width: 44px;
+      height: 44px;
+    }
+
+    .wolf-emblem-svg.lg {
+      width: 84px;
+      height: 84px;
+    }
+
+    .wolf-wordmark {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .wolf-wordmark-title {
+      font-weight: 900;
+      font-size: 1.08rem;
+      letter-spacing: 0.11em;
+      line-height: 1.12;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .wolf-wordmark-sub {
+      font-size: 0.69rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-hover);
+      line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* =====================================================================
+       4. SHARED BUTTONS, CONTROLS & BADGES (>= 44px TOUCH TARGETS WHERE NEEDED)
+       ===================================================================== */
+    .lang-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px;
+      background-color: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      flex-shrink: 0;
+    }
+
+    .lang-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      transition: background-color 0.15s ease, color 0.15s ease;
+      white-space: nowrap;
+      min-height: 34px;
+    }
+
+    .lang-btn:hover {
+      color: var(--text-primary);
+      background-color: var(--bg-hover);
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, #06b6d4, #2563eb);
+      color: #ffffff;
+      box-shadow: 0 2px 12px var(--accent-glow);
+    }
+
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 44px;
+      min-width: 44px;
+      padding: 0 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background-color: var(--bg-elevated);
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      font-weight: 700;
+      transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .icon-btn:hover {
+      background-color: var(--bg-hover);
+      border-color: var(--accent);
+    }
+
+    .icon-btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(34, 211, 238, 0.42);
+      background: linear-gradient(135deg, #06b6d4 0%, #2563eb 100%);
+      color: #ffffff;
+      font-size: 0.86rem;
+      font-weight: 800;
+      box-shadow: 0 6px 20px var(--accent-glow), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+      transition: filter 0.15s ease, transform 0.1s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.08);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 44px;
+      padding: 9px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background-color: var(--bg-elevated);
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      font-weight: 700;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--bg-hover);
+      border-color: var(--accent);
+    }
+
+    .btn-danger {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 44px;
+      padding: 9px 14px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(244, 63, 94, 0.45);
+      background: linear-gradient(135deg, #f43f5e, #be123c);
+      color: #ffffff;
+      font-size: 0.82rem;
+      font-weight: 800;
+      box-shadow: 0 4px 14px rgba(244, 63, 94, 0.25);
+      transition: filter 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-danger:hover {
+      filter: brightness(1.08);
+    }
+
+    /* =====================================================================
+       5. LOGIN VIEW (OBSIDIAN & CYAN COMMAND GATE)
+       ===================================================================== */
+    #login-view {
+      min-height: 100dvh;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 22px 16px;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 16% 18%, rgba(34, 211, 238, 0.18), transparent 42%),
+        radial-gradient(circle at 84% 82%, rgba(37, 99, 235, 0.18), transparent 46%),
+        linear-gradient(180deg, rgba(6, 182, 212, 0.04) 0%, transparent 100%),
+        var(--bg-app);
+    }
+
+    .login-top-controls {
+      width: 100%;
+      max-width: 450px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+      min-width: 0;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 450px;
+      background-color: var(--bg-surface);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 30px 24px;
+      box-shadow: var(--shadow-lg), 0 0 0 1px rgba(34, 211, 238, 0.1) inset;
+      min-width: 0;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .login-header .wolf-wordmark-title {
+      font-size: 1.55rem;
+      letter-spacing: 0.12em;
+    }
+
+    .login-subtitle {
+      margin: 10px 0 0;
+      font-size: 0.87rem;
+      color: var(--text-secondary);
+    }
+
+    .field-group {
+      margin-bottom: 15px;
+      min-width: 0;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .input-icon-start {
+      position: absolute;
+      inset-inline-start: 12px;
+      color: var(--accent-hover);
+      pointer-events: none;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      min-width: 0;
+      background-color: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 0.92rem;
+      padding: 10px 12px;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    }
+
+    .form-input.with-start {
+      padding-inline-start: 38px;
+    }
+
+    .form-input.with-end {
+      padding-inline-end: 42px;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--accent-hover);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+      background-color: var(--bg-surface);
+    }
+
+    .input-eye-btn {
+      position: absolute;
+      inset-inline-end: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      min-width: 36px;
+      min-height: 36px;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .input-eye-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .login-error-box {
+      margin-top: 14px;
+      padding: 11px 13px;
+      border-radius: var(--radius-md);
+      background-color: var(--danger-soft);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      font-size: 0.83rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .login-footer-actions {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* =====================================================================
+       6. TOPBAR & MAIN LAYOUT SHELL
+       ===================================================================== */
+    #app-view {
+      min-height: 100dvh;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    .app-topbar {
+      position: sticky;
+      top: 0;
+      min-height: var(--topbar-h);
+      width: 100%;
+      z-index: 40;
+      background-color: var(--bg-surface);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      flex-shrink: 1;
+    }
+
+    .topbar-tabs {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px;
+      background-color: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      min-width: 0;
+    }
+
+    .nav-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 38px;
+      padding: 6px 13px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      font-weight: 700;
+      white-space: nowrap;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .nav-tab-btn:hover {
+      color: var(--text-primary);
+      background-color: var(--bg-hover);
+    }
+
+    .nav-tab-btn.active {
+      background: linear-gradient(135deg, #06b6d4, #2563eb);
+      color: #ffffff;
+      box-shadow: 0 2px 12px var(--accent-glow);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      flex-shrink: 0;
+    }
+
+    .app-body {
+      flex: 1;
+      min-height: calc(100dvh - var(--topbar-h));
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      overflow-x: hidden;
+    }
+
+    /* =====================================================================
+       7. ADMIN ROSTER SIDEBAR & DISCUSSION / TASK STREAM
+       ===================================================================== */
+    #admin-workspace {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100dvh - var(--topbar-h));
+      min-width: 0;
+      overflow-x: hidden;
+    }
+
+    .chat-layout-grid {
+      flex: 1;
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(275px, 330px) minmax(0, 1fr);
+      min-height: calc(100dvh - var(--topbar-h));
+      min-width: 0;
+      position: relative;
+    }
+
+    .workers-sidebar {
+      background-color: var(--bg-surface);
+      backdrop-filter: blur(12px);
+      border-inline-end: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      height: calc(100dvh - var(--topbar-h));
+      position: sticky;
+      top: var(--topbar-h);
+      z-index: 25;
+    }
+
+    .sidebar-header {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .sidebar-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .workers-list {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .worker-card-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      min-height: 62px;
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      background-color: transparent;
+      text-align: start;
+      width: 100%;
+      min-width: 0;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .worker-card-item:hover {
+      background-color: var(--bg-hover);
+      border-color: rgba(34, 211, 238, 0.25);
+    }
+
+    .worker-card-item.active {
+      background-color: var(--accent-soft);
+      border-color: var(--accent-hover);
+      box-shadow: 0 0 16px rgba(34, 211, 238, 0.14);
+    }
+
+    .sidebar-footer {
+      padding: 10px 12px;
+      border-top: 1px solid var(--border-subtle);
+      background-color: var(--bg-elevated);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: var(--topbar-h) 0 0 0;
+      background-color: rgba(3, 6, 15, 0.68);
+      z-index: 24;
+    }
+
+    .sidebar-backdrop.open {
+      display: block;
+    }
+
+    .chat-pane {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      flex: 1;
+      min-height: calc(100dvh - var(--topbar-h));
+      background:
+        radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.08), transparent 55%),
+        var(--bg-app);
+    }
+
+    .chat-header {
+      background-color: var(--bg-surface);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .chat-header-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1 1 220px;
+    }
+
+    .chat-header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .worker-stats-strip {
+      background-color: var(--bg-elevated);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 8px 16px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .mini-stat-box {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 8px 10px;
+      min-width: 0;
+    }
+
+    .mini-stat-label {
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mini-stat-val {
+      font-size: 1.06rem;
+      font-weight: 900;
+      margin-top: 2px;
+      display: block;
+    }
+
+    .chat-feed {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .msg-row {
+      display: flex;
+      flex-direction: column;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .msg-row.outgoing {
+      align-items: flex-end;
+    }
+
+    .msg-row.incoming {
+      align-items: flex-start;
+    }
+
+    .msg-bubble {
+      max-width: min(520px, 92%);
+      min-width: 0;
+      padding: 11px 14px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .msg-bubble.outgoing {
+      background: linear-gradient(135deg, #06b6d4, #2563eb);
+      color: #ffffff;
+      border-end-end-radius: 4px;
+    }
+
+    .msg-bubble.incoming {
+      background-color: var(--bg-surface);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-end-start-radius: 4px;
+    }
+
+    .sys-pill {
+      align-self: center;
+      max-width: 92%;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      background-color: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-align: center;
+      word-break: break-word;
+    }
+
+    .task-card-bubble {
+      width: 100%;
+      max-width: 600px;
+      min-width: 0;
+      background-color: var(--bg-surface);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-inline-start: 4px solid var(--accent-hover);
+      border-radius: var(--radius-lg);
+      padding: 15px 16px;
+      box-shadow: var(--shadow-md);
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .task-card-bubble.completed {
+      border-inline-start-color: var(--success);
+    }
+
+    .task-card-bubble.prio-urgent {
+      border-inline-start-color: var(--danger);
+      box-shadow: var(--shadow-md), 0 0 20px rgba(244, 63, 94, 0.16);
+    }
+
+    .task-card-bubble.prio-high {
+      border-inline-start-color: var(--warning);
+    }
+
+    .task-progress-track {
+      width: 100%;
+      height: 10px;
+      border-radius: var(--radius-full);
+      background-color: var(--bg-subtle);
+      overflow: hidden;
+    }
+
+    .task-progress-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width 0.22s ease, background-color 0.22s ease;
+    }
+
+    .readonly-lock-banner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .worker-controls-box {
+      padding: 12px;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    input[type="range"].wolf-slider {
+      width: 100%;
+      accent-color: var(--accent-hover);
+      cursor: pointer;
+      height: 28px;
+      touch-action: pan-y;
+    }
+
+    .prio-badge, .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: var(--radius-full);
+      font-size: 0.71rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .prio-badge.low { background-color: var(--info-soft); color: var(--info); }
+    .prio-badge.normal { background-color: var(--accent-soft); color: var(--accent-hover); }
+    .prio-badge.high { background-color: var(--warning-soft); color: var(--warning); }
+    .prio-badge.urgent { background-color: var(--danger-soft); color: var(--danger); }
+
+    .status-badge.done { background-color: var(--success-soft); color: var(--success); }
+    .status-badge.progress { background-color: var(--warning-soft); color: var(--warning); }
+    .status-badge.todo { background-color: var(--bg-subtle); color: var(--text-secondary); }
+
+    .chat-composer {
+      background-color: var(--bg-surface);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .composer-action-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .composer-message-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      min-width: 0;
+    }
+
+    /* =====================================================================
+       8. STATISTICS BOARD & SVG CHARTS
+       ===================================================================== */
+    .dashboard-container {
+      width: 100%;
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 20px 16px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .dash-top-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .surface-card {
+      background-color: var(--bg-surface);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      min-width: 0;
+    }
+
+    .kpi-val {
+      font-size: 1.75rem;
+      font-weight: 900;
+      line-height: 1.15;
+      margin-top: 6px;
+    }
+
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .chart-box {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+
+    .svg-donut {
+      width: 112px;
+      height: 112px;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    .prio-bar-row {
+      display: grid;
+      grid-template-columns: 88px minmax(0, 1fr) 36px;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.8rem;
+    }
+
+    .prio-bar-track {
+      height: 8px;
+      border-radius: var(--radius-full);
+      background-color: var(--bg-subtle);
+      overflow: hidden;
+    }
+
+    .prio-bar-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+    }
+
+    .leaderboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
+      gap: 12px;
+    }
+
+    .filters-bar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .tasks-list-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+      min-width: 0;
+    }
+
+    .dash-task-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      min-width: 0;
+    }
+
+    .dash-task-main {
+      flex: 1 1 280px;
+      min-width: 0;
+    }
+
+    .dash-task-progress-col {
+      width: 180px;
+      flex-shrink: 0;
+    }
+
+    /* =====================================================================
+       9. WORKER AVATARS, MODALS, MOBILE BOTTOM NAV & TOASTS
+       ===================================================================== */
+    .avatar-circle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md);
+      color: #ffffff;
+      font-weight: 900;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .avatar-circle.md { width: 42px; height: 42px; font-size: 0.88rem; }
+    .avatar-circle.sm { width: 34px; height: 34px; font-size: 0.76rem; border-radius: var(--radius-sm); }
+
+    .color-av-cyan { background: linear-gradient(135deg, #06b6d4, #2563eb); }
+    .color-av-emerald { background: linear-gradient(135deg, #10b981, #059669); }
+    .color-av-amber { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .color-av-rose { background: linear-gradient(135deg, #f43f5e, #e11d48); }
+    .color-av-sky { background: linear-gradient(135deg, #38bdf8, #0284c7); }
+    .color-av-indigo { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background-color: rgba(3, 6, 15, 0.74);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .modal-panel {
+      width: 100%;
+      max-width: 490px;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      box-shadow: var(--shadow-lg);
+      max-height: 90dvh;
+      overflow-y: auto;
+      min-width: 0;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 1.06rem;
+      font-weight: 800;
+    }
+
+    .modal-footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .mobile-bottom-nav {
+      display: none;
+    }
+
+    .toast-container {
+      position: fixed;
+      bottom: 18px;
+      inset-inline-end: 18px;
+      z-index: 80;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: calc(100vw - 36px);
+      pointer-events: none;
+    }
+
+    .toast-item {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 14px;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      font-size: 0.83rem;
+      font-weight: 700;
+      box-shadow: var(--shadow-lg);
+      max-width: 390px;
+      word-break: break-word;
+    }
+
+    .toast-item.success { border-inline-start: 4px solid var(--success); }
+    .toast-item.error { border-inline-start: 4px solid var(--danger); }
+    .toast-item.info { border-inline-start: 4px solid var(--accent-hover); }
+
+    #boot-error-banner {
+      margin: 24px auto;
+      max-width: 540px;
+      padding: 16px;
+      border-radius: var(--radius-lg);
+      background-color: var(--danger-soft);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    /* =====================================================================
+       10. RESPONSIVE & MOBILE BREAKPOINTS
+       ===================================================================== */
+    @media (max-width: 1024px) {
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .filters-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 899px) {
+      .chat-layout-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .workers-sidebar {
+        position: fixed;
+        top: var(--topbar-h);
+        inset-inline-start: 0;
+        width: min(305px, 85vw);
+        height: calc(100dvh - var(--topbar-h) - var(--mobile-nav-h) - env(safe-area-inset-bottom, 0px));
+        transform: translateX(-105%);
+        transition: transform 0.22s ease;
+        box-shadow: var(--shadow-lg);
+      }
+
+      html[dir="rtl"] .workers-sidebar {
+        transform: translateX(105%);
+      }
+
+      .workers-sidebar.open {
+        transform: translateX(0);
+      }
+
+      .mobile-only-btn {
+        display: inline-flex;
+      }
+
+      .app-body {
+        padding-bottom: calc(var(--mobile-nav-h) + env(safe-area-inset-bottom, 0px));
+      }
+
+      .mobile-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        inset-inline: 0;
+        height: calc(var(--mobile-nav-h) + env(safe-area-inset-bottom, 0px));
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        background-color: var(--bg-surface);
+        backdrop-filter: blur(12px);
+        border-top: 1px solid var(--border);
+        box-shadow: var(--shadow-md);
+        z-index: 45;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        align-items: center;
+      }
+
+      .mobile-bottom-btn {
+        height: 100%;
+        min-height: 44px;
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        font-size: 0.71rem;
+        font-weight: 800;
+        padding: 4px;
+      }
+
+      .mobile-bottom-btn.active {
+        color: var(--accent-hover);
+        background-color: var(--accent-soft);
+      }
+
+      .modal-backdrop {
+        align-items: flex-end;
+        padding: 0;
+      }
+
+      .modal-panel {
+        border-end-start-radius: 0;
+        border-end-end-radius: 0;
+        max-width: 100%;
+        max-height: 88dvh;
+        padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      }
+
+      .toast-container {
+        bottom: calc(var(--mobile-nav-h) + 12px + env(safe-area-inset-bottom, 0px));
+      }
+    }
+
+    @media (min-width: 900px) {
+      .mobile-only-btn {
+        display: none !important;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .form-input, .form-select, .form-textarea {
+        font-size: 16px;
+      }
+      .analytics-grid { grid-template-columns: minmax(0, 1fr); }
+      .kpi-grid { grid-template-columns: minmax(0, 1fr); }
+      .filters-bar { grid-template-columns: minmax(0, 1fr); }
+      .worker-stats-strip {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+        padding: 8px 10px;
+      }
+      .dash-task-progress-col { width: 100%; }
+      .btn-label-hide-sm { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Shared High-Visibility Transparent Blue Wolf Shield SVG Definition -->
+  <svg id="wolf-svg-defs" class="hidden" aria-hidden="true">
+    <defs>
+      <linearGradient id="wtCyanShield" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#67e8f9" />
+        <stop offset="48%" stop-color="#06b6d4" />
+        <stop offset="100%" stop-color="#1d4ed8" />
+      </linearGradient>
+      <linearGradient id="wtIceWolf" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ffffff" />
+        <stop offset="60%" stop-color="#e0f2fe" />
+        <stop offset="100%" stop-color="#7dd3fc" />
+      </linearGradient>
+      <linearGradient id="wtBannerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#0369a1" />
+        <stop offset="50%" stop-color="#0284c7" />
+        <stop offset="100%" stop-color="#1e40af" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div id="boot-error-banner" class="hidden" role="alert"></div>
+
+  <!-- =====================================================================
+       VIEW 1 : LOGIN VIEW
+       ===================================================================== -->
+  <section id="login-view" aria-label="WOLF TEAM Login">
+    <div class="login-top-controls">
+      <div class="lang-switch" role="group" aria-label="Language switcher">
+        <button type="button" class="lang-btn active" data-lang-btn="fr" onclick="setLanguage('fr')">FR</button>
+        <button type="button" class="lang-btn" data-lang-btn="en" onclick="setLanguage('en')">EN</button>
+        <button type="button" class="lang-btn" data-lang-btn="ar" onclick="setLanguage('ar')">عربي</button>
+      </div>
+
+      <button type="button" class="icon-btn" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span id="login-theme-icon"></span>
+      </button>
+    </div>
+
+    <div class="login-card">
+      <div class="login-header">
+        <div class="wolf-brand" style="flex-direction: column; gap: 10px;">
+          <div class="wolf-logo-frame login-hero">
+            <svg class="wolf-emblem-svg lg" viewBox="0 0 80 80" width="84" height="84" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="WOLF TEAM Shield Emblem">
+              <!-- Outer electric cyan shield -->
+              <polygon points="40,4 70,17 64,52 40,74 16,52 10,17" fill="#061224" fill-opacity="0.72" stroke="url(#wtCyanShield)" stroke-width="3.2" stroke-linejoin="round" />
+              <polygon points="40,9 64,20 59,49 40,67 21,49 16,20" fill="none" stroke="#22d3ee" stroke-width="1.2" stroke-opacity="0.65" />
+              <!-- Fierce wolf profile & ears -->
+              <polygon points="21,16 33,26 23,37" fill="url(#wtCyanShield)" stroke="#050b18" stroke-width="1.6" stroke-linejoin="round" />
+              <polygon points="59,16 47,26 57,37" fill="url(#wtCyanShield)" stroke="#050b18" stroke-width="1.6" stroke-linejoin="round" />
+              <polygon points="24,20 30,27 24,34" fill="url(#wtIceWolf)" />
+              <polygon points="56,20 50,27 56,34" fill="url(#wtIceWolf)" />
+              <!-- Wolf head & snout -->
+              <polygon points="40,21 55,36 47,54 33,54 25,36" fill="url(#wtCyanShield)" stroke="#050b18" stroke-width="1.8" stroke-linejoin="round" />
+              <polygon points="25,36 40,42 40,55 29,48" fill="url(#wtIceWolf)" />
+              <polygon points="55,36 40,42 40,55 51,48" fill="#bae6fd" />
+              <!-- Piercing glowing eyes & nose -->
+              <polygon points="28,36 35,38 29,40.5" fill="#ffffff" />
+              <polygon points="52,36 45,38 51,40.5" fill="#ffffff" />
+              <circle cx="31.5" cy="38.2" r="1.5" fill="#0284c7" />
+              <circle cx="48.5" cy="38.2" r="1.5" fill="#0284c7" />
+              <polygon points="36.5,51 43.5,51 40,55.5" fill="#050b18" />
+              <!-- Geometric WOLF TEAM banner -->
+              <polygon points="8,56 72,56 68,67 12,67" fill="url(#wtBannerGrad)" stroke="#67e8f9" stroke-width="1.5" stroke-linejoin="round" />
+              <text x="40" y="64" text-anchor="middle" fill="#ffffff" font-size="7.2" font-weight="900" letter-spacing="1.2">WOLF TEAM</text>
+            </svg>
+          </div>
+          <div class="wolf-wordmark" style="align-items: center;">
+            <span class="wolf-wordmark-title">WOLF TEAM</span>
+            <span id="login-badge-text" class="wolf-wordmark-sub">COMMAND CENTER</span>
+          </div>
+        </div>
+        <p id="login-subtitle" class="login-subtitle">Connexion sécurisée — Gestion des tâches & discussion d'équipe</p>
+      </div>
+
+      <form id="login-form" novalidate>
+        <div class="field-group">
+          <label for="login-username" id="lbl-login-username" class="field-label">Nom d'utilisateur</label>
+          <div class="input-wrap">
+            <span class="input-icon-start" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l7 4v6c0 5-3 8-7 10-4-2-7-5-7-10V6l7-4z"/><circle cx="12" cy="10" r="2.2"/><path d="M8.5 16c.8-1.5 2-2.2 3.5-2.2s2.7.7 3.5 2.2"/></svg>
+            </span>
+            <input type="text" id="login-username" class="form-input with-start" autocomplete="username" required />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="login-code" id="lbl-login-code" class="field-label">Code d'accès</label>
+          <div class="input-wrap">
+            <span class="input-icon-start" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            <input type="password" id="login-code" class="form-input with-start with-end" autocomplete="current-password" required />
+            <button type="button" class="input-eye-btn" onclick="togglePasswordVisibility('login-code', 'login-eye-icon')" aria-label="Toggle code visibility">
+              <span id="login-eye-icon"></span>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width: 100%; padding: 12px 16px; margin-top: 6px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          <span id="btn-login-submit">Se connecter</span>
+        </button>
+      </form>
+
+      <div id="login-error-box" class="login-error-box hidden" role="alert">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="login-error-text"></span>
+      </div>
+
+      <div class="login-footer-actions">
+        <button type="button" class="btn-secondary" style="min-height: 36px; padding: 6px 12px; font-size: 0.76rem;" onclick="openResetStateModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          <span id="btn-reset-state">Réinitialiser les données</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       VIEW 2 : MAIN AUTHENTICATED SHELL
+       ===================================================================== -->
+  <div id="app-view" class="hidden">
+    <header class="app-topbar">
+      <div class="topbar-left">
+        <button type="button" id="mobile-sidebar-toggle" class="icon-btn mobile-only-btn" onclick="toggleMobileSidebar()" aria-label="Roster menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </button>
+
+        <div class="wolf-brand">
+          <!-- Super Admin uses the transparent WOLF TEAM shield emblem; Worker uses their avatar badge -->
+          <div id="header-admin-logo-wrap" class="wolf-logo-frame admin-badge">
+            <svg class="wolf-emblem-svg sm" viewBox="0 0 80 80" width="34" height="34" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="WOLF TEAM Super Admin Emblem">
+              <polygon points="40,4 70,17 64,52 40,74 16,52 10,17" fill="#061224" fill-opacity="0.72" stroke="url(#wtCyanShield)" stroke-width="3.2" stroke-linejoin="round" />
+              <polygon points="21,16 33,26 23,37" fill="url(#wtCyanShield)" stroke="#050b18" stroke-width="1.6" />
+              <polygon points="59,16 47,26 57,37" fill="url(#wtCyanShield)" stroke="#050b18" stroke-width="1.6" />
+              <polygon points="40,21 55,36 47,54 33,54 25,36" fill="url(#wtCyanShield)" stroke="#050b18" stroke-width="1.8" />
+              <polygon points="25,36 40,42 40,55 29,48" fill="url(#wtIceWolf)" />
+              <polygon points="55,36 40,42 40,55 51,48" fill="#bae6fd" />
+              <polygon points="28,36 35,38 29,40.5" fill="#ffffff" />
+              <polygon points="52,36 45,38 51,40.5" fill="#ffffff" />
+              <polygon points="8,56 72,56 68,67 12,67" fill="url(#wtBannerGrad)" stroke="#67e8f9" stroke-width="1.5" />
+              <text x="40" y="64" text-anchor="middle" fill="#ffffff" font-size="7.2" font-weight="900" letter-spacing="1.2">WOLF TEAM</text>
+            </svg>
+          </div>
+          <div id="header-worker-avatar" class="avatar-circle sm color-av-cyan hidden">WT</div>
+
+          <div class="wolf-wordmark">
+            <span class="wolf-wordmark-title">WOLF TEAM</span>
+            <span id="header-role-label" class="wolf-wordmark-sub">Super Admin</span>
+          </div>
+        </div>
+      </div>
+
+      <nav id="admin-nav-tabs" class="topbar-tabs hidden" aria-label="Admin sections">
+        <button type="button" id="tab-btn-chat" class="nav-tab-btn active" onclick="switchAdminView('chat')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span id="tab-label-chat" class="btn-label-hide-sm">Discussions</span>
+        </button>
+        <button type="button" id="tab-btn-stats" class="nav-tab-btn" onclick="switchAdminView('stats')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+          <span id="tab-label-stats" class="btn-label-hide-sm">Statistiques</span>
+        </button>
+      </nav>
+
+      <div class="topbar-right">
+        <div class="lang-switch" role="group" aria-label="Language switcher">
+          <button type="button" class="lang-btn active" data-lang-btn="fr" onclick="setLanguage('fr')">FR</button>
+          <button type="button" class="lang-btn" data-lang-btn="en" onclick="setLanguage('en')">EN</button>
+          <button type="button" class="lang-btn" data-lang-btn="ar" onclick="setLanguage('ar')">عربي</button>
+        </div>
+
+        <button type="button" class="icon-btn" onclick="toggleTheme()" aria-label="Toggle theme">
+          <span id="app-theme-icon"></span>
+        </button>
+
+        <button type="button" class="btn-secondary" onclick="logoutUser()" style="padding: 8px 12px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span id="btn-logout-label" class="btn-label-hide-sm">Déconnexion</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="app-body">
+      <!-- =================================================================
+           SUPER ADMIN WORKSPACE
+           ================================================================= -->
+      <div id="admin-workspace" class="hidden">
+        <!-- Sub-view A: Team Roster + Discussion & Task Bubbles -->
+        <div id="admin-chat-view" class="chat-layout-grid">
+          <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="closeMobileSidebar()"></div>
+
+          <aside id="workers-sidebar" class="workers-sidebar" aria-label="Team roster">
+            <div class="sidebar-header">
+              <div class="sidebar-title-row">
+                <span id="sidebar-team-title" style="font-weight: 800; font-size: 0.92rem;">Équipe (<span id="workers-count-badge">0</span>)</span>
+                <button type="button" class="btn-primary" style="min-height: 36px; padding: 6px 12px; font-size: 0.78rem;" onclick="openWorkerModal()">
+                  <span>+</span>
+                  <span id="btn-new-worker">Nouveau</span>
+                </button>
+              </div>
+              <div class="input-wrap">
+                <span class="input-icon-start" aria-hidden="true">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </span>
+                <input type="text" id="worker-search-input" class="form-input with-start" style="padding-top: 8px; padding-bottom: 8px; font-size: 0.84rem;" oninput="renderWorkersSidebar()" />
+              </div>
+            </div>
+
+            <div id="workers-list" class="workers-list"></div>
+
+            <div class="sidebar-footer">
+              <button type="button" class="icon-btn" style="min-height: 36px; padding: 0 10px; font-size: 0.74rem;" onclick="exportBackupJSON()">
+                <span id="lbl-export-json">Sauvegarde</span>
+              </button>
+              <button type="button" class="icon-btn" style="min-height: 36px; padding: 0 10px; font-size: 0.74rem;" onclick="document.getElementById('import-json-input').click()">
+                <span id="lbl-import-json">Restaurer</span>
+              </button>
+              <button type="button" class="icon-btn" style="min-height: 36px; padding: 0 10px; font-size: 0.74rem; color: var(--danger);" onclick="openResetStateModal()">
+                <span id="lbl-reset-json">Réinitialiser</span>
+              </button>
+              <input type="file" id="import-json-input" accept=".json,application/json" class="hidden" onchange="importBackupJSON(event)" />
+            </div>
+          </aside>
+
+          <!-- Shared Discussion & Task Stream Pane -->
+          <section id="active-chat-pane" class="chat-pane" aria-label="Conversation">
+            <div id="admin-no-worker-state" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 28px; text-align: center;">
+              <div class="wolf-logo-frame login-hero" style="margin-bottom: 14px;">
+                <svg class="wolf-emblem-svg lg" viewBox="0 0 80 80" width="84" height="84" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="WOLF TEAM Emblem">
+                  <polygon points="40,4 70,17 64,52 40,74 16,52 10,17" fill="#061224" fill-opacity="0.72" stroke="url(#wtCyanShield)" stroke-width="3.2" stroke-linejoin="round" />
+                  <polygon points="21,16 33,26 23,37" fill="url(#wtCyanShield)" stroke="#050b18" stroke-width="1.6" />
+                  <polygon points="59,16 47,26 57,37" fill="url(#wtCyanShield)" stroke="#050b18" stroke-width="1.6" />
+                  <polygon points="40,21 55,36 47,54 33,54 25,36" fill="url(#wtCyanShield)" stroke="#050b18" stroke-width="1.8" />
+                  <polygon points="25,36 40,42 40,55 29,48" fill="url(#wtIceWolf)" />
+                  <polygon points="55,36 40,42 40,55 51,48" fill="#bae6fd" />
+                  <polygon points="28,36 35,38 29,40.5" fill="#ffffff" />
+                  <polygon points="52,36 45,38 51,40.5" fill="#ffffff" />
+                  <polygon points="8,56 72,56 68,67 12,67" fill="url(#wtBannerGrad)" stroke="#67e8f9" stroke-width="1.5" />
+                  <text x="40" y="64" text-anchor="middle" fill="#ffffff" font-size="7.2" font-weight="900" letter-spacing="1.2">WOLF TEAM</text>
+                </svg>
+              </div>
+              <h2 id="empty-admin-title" style="margin: 0 0 8px; font-size: 1.28rem; font-weight: 900;">Bienvenue sur WOLF TEAM</h2>
+              <p id="empty-admin-desc" style="margin: 0 0 18px; max-width: 440px; font-size: 0.88rem; color: var(--text-secondary);">
+                Créez un profil travailleur ou sélectionnez un membre dans la liste pour attribuer des tâches et discuter.
+              </p>
+              <button type="button" class="btn-primary" onclick="openWorkerModal()">
+                <span id="btn-empty-create-worker">Créer un travailleur</span>
+              </button>
+            </div>
+
+            <div id="chat-active-container" class="hidden" style="flex: 1; display: flex; flex-direction: column; min-height: calc(100dvh - var(--topbar-h)); min-width: 0;">
+              <div class="chat-header">
+                <div class="chat-header-user">
+                  <div id="chat-target-avatar" class="avatar-circle md color-av-cyan">WT</div>
+                  <div style="min-width: 0;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                      <h2 id="chat-target-name" style="margin: 0; font-size: 1rem; font-weight: 800;">Nom</h2>
+                      <span id="chat-target-username" style="font-size: 0.74rem; font-weight: 800; color: var(--accent-hover);">@user</span>
+                    </div>
+                    <p id="chat-target-role" style="margin: 0; font-size: 0.76rem; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Poste</p>
+                  </div>
+                </div>
+
+                <div id="admin-worker-actions" class="chat-header-actions">
+                  <select id="chat-filter-select" class="form-select" style="width: auto; min-height: 38px; padding: 6px 10px; font-size: 0.78rem;" onchange="renderChatFeed()"></select>
+                  <button type="button" class="btn-secondary" style="min-height: 38px; padding: 6px 11px; font-size: 0.78rem;" onclick="openNotesModal()">
+                    <span id="btn-private-notes">Notes</span>
+                  </button>
+                  <button type="button" class="btn-secondary" style="min-height: 38px; padding: 6px 11px; font-size: 0.78rem;" onclick="openEditWorkerModal()">
+                    <span id="btn-edit-worker">Modifier</span>
+                  </button>
+                  <button type="button" class="btn-danger" style="min-height: 38px; padding: 6px 11px; font-size: 0.78rem;" onclick="openDeleteWorkerModal()">
+                    <span id="btn-delete-worker">Supprimer</span>
+                  </button>
+                </div>
+
+                <div id="worker-self-filter-wrap" class="chat-header-actions hidden">
+                  <select id="worker-chat-filter-select" class="form-select" style="width: auto; min-height: 38px; padding: 6px 10px; font-size: 0.78rem;" onchange="renderChatFeed()"></select>
+                </div>
+              </div>
+
+              <div class="worker-stats-strip">
+                <div class="mini-stat-box">
+                  <span id="lbl-stat-assigned" class="mini-stat-label">Assignées</span>
+                  <span id="stat-worker-assigned" class="mini-stat-val">0</span>
+                </div>
+                <div class="mini-stat-box">
+                  <span id="lbl-stat-completed" class="mini-stat-label">Terminées</span>
+                  <span id="stat-worker-completed" class="mini-stat-val" style="color: var(--success);">0</span>
+                </div>
+                <div class="mini-stat-box">
+                  <span id="lbl-stat-avg" class="mini-stat-label">Progression</span>
+                  <span id="stat-worker-avg" class="mini-stat-val" style="color: var(--accent-hover);">0%</span>
+                </div>
+              </div>
+
+              <div id="chat-feed" class="chat-feed"></div>
+
+              <div class="chat-composer">
+                <div class="composer-action-row">
+                  <div id="admin-task-composer-bar" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0;">
+                    <button type="button" class="btn-primary" style="min-height: 38px; padding: 7px 14px; font-size: 0.8rem;" onclick="openTaskModal()">
+                      <span>+</span>
+                      <span id="btn-assign-task">Attribuer une tâche</span>
+                    </button>
+
+                    <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--text-secondary);">
+                      <span id="lbl-quick-prio">Priorité :</span>
+                      <select id="composer-quick-priority" class="form-select" style="width: auto; min-height: 38px; padding: 6px 10px; font-size: 0.78rem;"></select>
+                    </div>
+                  </div>
+
+                  <div id="worker-info-strip" class="hidden" style="font-size: 0.78rem; color: var(--text-secondary);">
+                    <span id="lbl-worker-hint">Choisissez votre pourcentage ou validez à 100% directement dans chaque carte de tâche.</span>
+                  </div>
+                </div>
+
+                <form id="send-message-form" class="composer-message-row">
+                  <input type="text" id="chat-message-input" class="form-input" autocomplete="off" />
+                  <button type="submit" class="btn-primary" style="min-height: 44px; padding: 10px 16px;">
+                    <span id="btn-send-msg">Envoyer</span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Sub-view B: Global Statistics & Deduplicated Tasks Board -->
+        <div id="admin-stats-view" class="hidden dashboard-container">
+          <div class="dash-top-row">
+            <div style="min-width: 0;">
+              <h1 id="stats-main-title" style="margin: 0; font-size: 1.38rem; font-weight: 900;">Statistiques & Tableau WOLF TEAM</h1>
+              <p id="stats-main-subtitle" style="margin: 4px 0 0; font-size: 0.86rem; color: var(--text-secondary);">
+                Vue d'ensemble des tâches, priorités, performances par travailleur et suivi en lecture seule.
+              </p>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+              <button type="button" class="btn-primary" onclick="openWorkerModal()">
+                <span>+</span>
+                <span id="btn-stats-new-worker">Nouvel Employé</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="stats-kpi-grid" class="kpi-grid"></div>
+
+          <div class="analytics-grid">
+            <div class="surface-card">
+              <h3 id="chart-status-title" style="margin: 0 0 12px; font-size: 0.94rem; font-weight: 800;">Répartition par statut</h3>
+              <div id="svg-status-chart-wrap" class="chart-box"></div>
+            </div>
+
+            <div class="surface-card">
+              <h3 id="chart-priority-title" style="margin: 0 0 12px; font-size: 0.94rem; font-weight: 800;">Répartition par priorité</h3>
+              <div id="svg-priority-chart-wrap" style="display: flex; flex-direction: column; gap: 10px;"></div>
+            </div>
+          </div>
+
+          <div class="surface-card">
+            <h3 id="leaderboard-heading" style="margin: 0 0 12px; font-size: 0.96rem; font-weight: 800;">Statistiques par travailleur</h3>
+            <div id="admin-worker-leaderboard" class="leaderboard-grid"></div>
+          </div>
+
+          <div class="surface-card">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;">
+              <h3 id="all-tasks-heading" style="margin: 0; font-size: 0.96rem; font-weight: 800;">
+                Toutes les tâches (<span id="dash-tasks-count">0</span>)
+              </h3>
+
+              <div style="display: inline-flex; padding: 3px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-md);">
+                <button type="button" id="mode-btn-list" class="nav-tab-btn active" onclick="setDashboardMode('list')">
+                  <span id="lbl-mode-list">Liste unique</span>
+                </button>
+                <button type="button" id="mode-btn-grouped" class="nav-tab-btn" onclick="setDashboardMode('grouped')">
+                  <span id="lbl-mode-grouped">Par employé</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="filters-bar">
+              <select id="dash-filter-worker" class="form-select" onchange="renderAdminDashboard()"></select>
+              <select id="dash-filter-priority" class="form-select" onchange="renderAdminDashboard()"></select>
+              <select id="dash-filter-status" class="form-select" onchange="renderAdminDashboard()"></select>
+              <select id="dash-sort-by" class="form-select" onchange="renderAdminDashboard()"></select>
+            </div>
+
+            <div id="dash-tasks-container" class="tasks-list-stack"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================================================================
+           WORKER WORKSPACE
+           ================================================================= -->
+      <div id="worker-workspace" class="hidden" style="flex: 1; display: flex; flex-direction: column; min-height: calc(100dvh - var(--topbar-h)); min-width: 0;">
+        <div id="worker-personal-stats" class="dashboard-container" style="padding-bottom: 12px;"></div>
+        <div id="worker-chat-slot" style="flex: 1; display: flex; flex-direction: column; min-width: 0;"></div>
+      </div>
+    </main>
+
+    <!-- Mobile Bottom Navigation Bar (< 900px) -->
+    <nav id="mobile-bottom-nav" class="mobile-bottom-nav" aria-label="Mobile navigation">
+      <button type="button" id="mnav-roster" class="mobile-bottom-btn" onclick="handleMobileNav('roster')">
+        <span id="mnav-lbl-roster">Équipe</span>
+      </button>
+      <button type="button" id="mnav-chat" class="mobile-bottom-btn active" onclick="handleMobileNav('chat')">
+        <span id="mnav-lbl-chat">Discussions</span>
+      </button>
+      <button type="button" id="mnav-stats" class="mobile-bottom-btn" onclick="handleMobileNav('stats')">
+        <span id="mnav-lbl-stats">Statistiques</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- =====================================================================
+       MODALS
+       ===================================================================== -->
+  <div id="worker-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="worker-modal-title">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h3 id="worker-modal-title" class="modal-title">Créer un travailleur</h3>
+        <button type="button" class="icon-btn" style="min-height: 36px; min-width: 36px; padding: 0;" onclick="closeModal('worker-modal')" aria-label="Close">✕</button>
+      </div>
+
+      <form id="worker-form" onsubmit="saveWorkerProfile(event)">
+        <input type="hidden" id="worker-edit-id" />
+
+        <div class="field-group">
+          <label for="worker-fullname" id="lbl-w-fullname" class="field-label">Nom complet *</label>
+          <input type="text" id="worker-fullname" class="form-input" required />
+        </div>
+
+        <div class="field-group">
+          <label for="worker-role" id="lbl-w-role" class="field-label">Poste / Fonction *</label>
+          <input type="text" id="worker-role" class="form-input" required />
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 10px;">
+          <div class="field-group">
+            <label for="worker-username" id="lbl-w-username" class="field-label">Nom d'utilisateur *</label>
+            <input type="text" id="worker-username" class="form-input" autocomplete="off" required />
+          </div>
+
+          <div class="field-group">
+            <label for="worker-code" id="lbl-w-code" class="field-label">Code d'accès *</label>
+            <div class="input-wrap">
+              <input type="text" id="worker-code" class="form-input with-end" required />
+              <button type="button" class="input-eye-btn" onclick="generateRandomCode()" title="Generate code" aria-label="Generate code">⟳</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label id="lbl-w-color" class="field-label">Couleur d'avatar</label>
+          <div id="worker-color-picker" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <button type="button" data-color="color-av-cyan" onclick="selectWorkerColor('color-av-cyan')" class="avatar-circle sm color-av-cyan" style="border: 2px solid var(--text-primary);"></button>
+            <button type="button" data-color="color-av-emerald" onclick="selectWorkerColor('color-av-emerald')" class="avatar-circle sm color-av-emerald" style="border: 2px solid transparent;"></button>
+            <button type="button" data-color="color-av-amber" onclick="selectWorkerColor('color-av-amber')" class="avatar-circle sm color-av-amber" style="border: 2px solid transparent;"></button>
+            <button type="button" data-color="color-av-rose" onclick="selectWorkerColor('color-av-rose')" class="avatar-circle sm color-av-rose" style="border: 2px solid transparent;"></button>
+            <button type="button" data-color="color-av-sky" onclick="selectWorkerColor('color-av-sky')" class="avatar-circle sm color-av-sky" style="border: 2px solid transparent;"></button>
+            <button type="button" data-color="color-av-indigo" onclick="selectWorkerColor('color-av-indigo')" class="avatar-circle sm color-av-indigo" style="border: 2px solid transparent;"></button>
+          </div>
+          <input type="hidden" id="worker-selected-color" value="color-av-cyan" />
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" onclick="closeModal('worker-modal')">
+            <span id="btn-w-cancel">Annuler</span>
+          </button>
+          <button type="submit" class="btn-primary">
+            <span id="btn-w-submit">Enregistrer</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="task-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="task-modal-title">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h3 id="task-modal-title" class="modal-title">Nouvelle tâche</h3>
+        <button type="button" class="icon-btn" style="min-height: 36px; min-width: 36px; padding: 0;" onclick="closeModal('task-modal')" aria-label="Close">✕</button>
+      </div>
+
+      <form id="task-form" onsubmit="saveTaskBubble(event)">
+        <input type="hidden" id="task-edit-id" />
+
+        <div class="field-group">
+          <label for="task-title-input" id="lbl-t-title" class="field-label">Titre de la tâche *</label>
+          <input type="text" id="task-title-input" class="form-input" required />
+        </div>
+
+        <div class="field-group">
+          <label for="task-desc-input" id="lbl-t-desc" class="field-label">Description / Consignes</label>
+          <textarea id="task-desc-input" rows="3" class="form-textarea"></textarea>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px;">
+          <div class="field-group">
+            <label for="task-priority-input" id="lbl-t-prio" class="field-label">Priorité *</label>
+            <select id="task-priority-input" class="form-select"></select>
+          </div>
+
+          <div class="field-group">
+            <label for="task-deadline-input" id="lbl-t-deadline" class="field-label">Échéance</label>
+            <input type="date" id="task-deadline-input" class="form-input" />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" onclick="closeModal('task-modal')">
+            <span id="btn-t-cancel">Annuler</span>
+          </button>
+          <button type="submit" class="btn-primary">
+            <span id="btn-t-submit">Envoyer la tâche</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="delete-worker-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-panel" style="max-width: 410px; text-align: center;">
+      <h3 id="del-worker-title" class="modal-title" style="margin-bottom: 8px; color: var(--danger);">Supprimer cet utilisateur ?</h3>
+      <p id="del-worker-desc" style="margin: 0; font-size: 0.84rem; color: var(--text-secondary);">
+        Cette action supprimera définitivement son profil, ses tâches et l'historique de discussion.
+      </p>
+      <div class="modal-footer" style="justify-content: center;">
+        <button type="button" class="btn-secondary" onclick="closeModal('delete-worker-modal')">
+          <span id="btn-del-w-cancel">Annuler</span>
+        </button>
+        <button type="button" class="btn-danger" onclick="confirmDeleteWorker()">
+          <span id="btn-del-w-confirm">Supprimer</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="delete-task-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-panel" style="max-width: 410px; text-align: center;">
+      <input type="hidden" id="delete-task-target-id" />
+      <h3 id="del-task-title" class="modal-title" style="margin-bottom: 8px; color: var(--danger);">Supprimer cette tâche ?</h3>
+      <p id="del-task-desc" style="margin: 0; font-size: 0.84rem; color: var(--text-secondary);">
+        Cette carte de tâche sera supprimée définitivement.
+      </p>
+      <div class="modal-footer" style="justify-content: center;">
+        <button type="button" class="btn-secondary" onclick="closeModal('delete-task-modal')">
+          <span id="btn-del-t-cancel">Annuler</span>
+        </button>
+        <button type="button" class="btn-danger" onclick="confirmDeleteTask()">
+          <span id="btn-del-t-confirm">Supprimer</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="reset-state-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-panel" style="max-width: 420px; text-align: center;">
+      <h3 id="reset-modal-title" class="modal-title" style="margin-bottom: 8px; color: var(--danger);">Réinitialiser les données ?</h3>
+      <p id="reset-modal-desc" style="margin: 0; font-size: 0.84rem; color: var(--text-secondary);">
+        Tous les comptes travailleurs, tâches et messages enregistrés localement seront effacés.
+      </p>
+      <div class="modal-footer" style="justify-content: center;">
+        <button type="button" class="btn-secondary" onclick="closeModal('reset-state-modal')">
+          <span id="btn-reset-cancel">Annuler</span>
+        </button>
+        <button type="button" class="btn-danger" onclick="confirmResetState()">
+          <span id="btn-reset-confirm">Réinitialiser</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="notes-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h3 id="notes-modal-title" class="modal-title">Notes privées Admin</h3>
+        <button type="button" class="icon-btn" style="min-height: 36px; min-width: 36px; padding: 0;" onclick="closeModal('notes-modal')" aria-label="Close">✕</button>
+      </div>
+      <p id="notes-modal-desc" style="margin: 0 0 10px; font-size: 0.82rem; color: var(--text-secondary);">
+        Notes strictement confidentielles visibles uniquement par le Super Admin.
+      </p>
+      <textarea id="private-notes-textarea" rows="5" class="form-textarea"></textarea>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" onclick="closeModal('notes-modal')">
+          <span id="btn-notes-cancel">Fermer</span>
+        </button>
+        <button type="button" class="btn-primary" onclick="savePrivateNotes()">
+          <span id="btn-notes-save">Enregistrer</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <script>
+    /* =====================================================================
+       1. CONSTANTS, CREDENTIALS & MULTILINGUAL DICTIONARY (FR / EN / AR)
+       ===================================================================== */
+    const STORAGE_KEY = 'wolfteam_cmd_state_v2';
+    const THEME_KEY = 'wolfteam_cmd_theme_v2';
+    const LANG_KEY = 'wolfteam_cmd_lang_v2';
+
+    const SUPER_ADMIN = Object.freeze({
+      id: 'super-admin-salah',
+      username: 'salah2026',
+      code: 'slh1100',
+      displayName: 'Salah (Super Admin)'
+    });
+
+    const PRIORITY_ORDER = Object.freeze({
+      urgent: 4,
+      high: 3,
+      normal: 2,
+      low: 1
+    });
+
+    const memoryStore = new Map();
+
+    function safeGet(key) {
+      try {
+        return window.localStorage.getItem(key);
+      } catch {
+        return memoryStore.has(key) ? memoryStore.get(key) : null;
+      }
+    }
+
+    function safeSet(key, val) {
+      memoryStore.set(key, String(val));
+      try {
+        window.localStorage.setItem(key, String(val));
+      } catch {
+        // Fallback kept in memoryStore
+      }
+    }
+
+    function safeRemove(key) {
+      memoryStore.delete(key);
+      try {
+        window.localStorage.removeItem(key);
+      } catch {
+        // Fallback kept in memoryStore
+      }
+    }
+
+    const I18N = {
+      fr: {
+        workspaceTag: 'CENTRE DE COMMANDE',
+        loginSubtitle: "Connexion sécurisée — Gestion des tâches & discussion d'équipe",
+        lblUsername: "Nom d'utilisateur",
+        lblCode: "Code d'accès",
+        btnLogin: 'Se connecter',
+        btnResetState: 'Réinitialiser les données',
+        errBadCreds: "Nom d'utilisateur ou code d'accès incorrect.",
+        errEmptyCreds: "Veuillez saisir votre nom d'utilisateur et votre code d'accès.",
+        roleSuperAdmin: 'Super Admin',
+        roleWorker: 'Travailleur',
+        tabChat: 'Discussions',
+        tabStats: 'Statistiques',
+        mnavRoster: 'Équipe',
+        mnavChat: 'Discussions',
+        mnavStats: 'Stats',
+        btnLogout: 'Déconnexion',
+        teamTitle: 'Équipe',
+        btnNewWorker: 'Nouveau',
+        searchWorkerPlaceholder: 'Rechercher un membre...',
+        exportJson: 'Sauvegarde',
+        importJson: 'Restaurer',
+        resetJson: 'Réinitialiser',
+        emptyAdminTitle: 'Bienvenue sur WOLF TEAM',
+        emptyAdminDesc: 'Créez un profil travailleur ou sélectionnez un membre dans la liste pour attribuer des tâches et discuter.',
+        btnCreateWorker: 'Créer un travailleur',
+        btnNotes: 'Notes',
+        btnEdit: 'Modifier',
+        btnDelete: 'Supprimer',
+        statAssigned: 'Assignées',
+        statCompleted: 'Terminées',
+        statAvg: 'Progression',
+        btnAssignTask: 'Attribuer une tâche',
+        lblQuickPrio: 'Priorité :',
+        workerHint: 'Choisissez votre pourcentage ou validez à 100% directement dans chaque carte de tâche.',
+        chatPlaceholder: 'Écrire un message...',
+        btnSend: 'Envoyer',
+        prio_low: 'Basse',
+        prio_normal: 'Normale',
+        prio_high: 'Haute',
+        prio_urgent: 'Urgente',
+        filterAll: 'Tout afficher',
+        filterTasks: 'Tâches uniquement',
+        filterMessages: 'Messages uniquement',
+        filterPending: 'En cours (< 100%)',
+        filterDone: 'Terminées (100%)',
+        filterUrgent: 'Urgentes',
+        statusDone100: 'Terminé 100%',
+        statusInProgress: 'En cours ({pct}%)',
+        statusTodo: 'À faire (0%)',
+        createdAt: 'Créée le',
+        deadlinePrefix: 'Échéance :',
+        progressLabel: 'Avancement',
+        adminReadOnlyNote: 'Suivi en direct — Contrôlé par le travailleur (Lecture seule Super Admin)',
+        btnMarkDone100: 'Terminer à 100%',
+        btnDone100Checked: 'Terminé 100% ✓',
+        statsTitle: 'Statistiques & Tableau WOLF TEAM',
+        statsSubtitle: "Vue d'ensemble des tâches, priorités, performances par travailleur et suivi en lecture seule.",
+        btnNewEmployee: 'Nouvel Employé',
+        kpiTotal: 'Total Tâches',
+        kpiTodo: 'À Faire (0%)',
+        kpiInProgress: 'En Cours (1–99%)',
+        kpiCompleted: 'Terminées (100%)',
+        kpiUrgent: 'Urgentes / Hautes',
+        kpiAvgProgress: 'Progression Moyenne',
+        chartStatusTitle: 'Répartition par statut',
+        chartPriorityTitle: 'Répartition par priorité',
+        leaderboardTitle: 'Statistiques par travailleur',
+        allTasksTitle: 'Toutes les tâches',
+        modeList: 'Liste unique',
+        modeGrouped: 'Par employé',
+        allWorkersOpt: 'Tous les employés',
+        allPrioritiesOpt: 'Toutes les priorités',
+        allStatusesOpt: 'Tous les statuts',
+        statusOptTodo: 'À faire (0%)',
+        statusOptProgress: 'En cours (1–99%)',
+        statusOptDone: 'Terminées (100%)',
+        sortRecent: 'Tri : Plus récentes',
+        sortPriority: 'Tri : Priorité',
+        sortPctAsc: 'Tri : % croissant',
+        sortPctDesc: 'Tri : % décroissant',
+        btnOpenChat: 'Ouvrir chat',
+        noWorkersYet: 'Aucun travailleur créé pour le moment.',
+        noMatchingWorkers: 'Aucun membre ne correspond à la recherche.',
+        noMatchingTasks: 'Aucune tâche ne correspond aux filtres sélectionnés.',
+        emptyFeed: 'Aucun élément dans cette discussion pour le moment.',
+        modalNewWorker: 'Créer un travailleur',
+        modalEditWorker: 'Modifier le travailleur',
+        lblWFullname: 'Nom complet *',
+        lblWRole: 'Poste / Fonction *',
+        lblWUsername: "Nom d'utilisateur *",
+        lblWCode: "Code d'accès *",
+        lblWColor: "Couleur d'avatar",
+        btnCancel: 'Annuler',
+        btnSave: 'Enregistrer',
+        modalNewTask: 'Nouvelle tâche pour {name}',
+        modalEditTask: 'Modifier la tâche',
+        lblTTaskTitle: 'Titre de la tâche *',
+        lblTDesc: 'Description / Consignes',
+        lblTPrio: 'Priorité *',
+        lblTDeadline: 'Date limite',
+        btnSendTask: 'Envoyer la tâche',
+        delWorkerTitle: 'Supprimer {name} ?',
+        delWorkerDesc: 'Cette action supprimera définitivement son compte, ses tâches et son historique.',
+        delTaskTitle: 'Supprimer cette tâche ?',
+        delTaskDesc: 'Cette carte de tâche sera supprimée définitivement.',
+        resetTitle: 'Réinitialiser les données ?',
+        resetDesc: 'Tous les comptes travailleurs, tâches et messages enregistrés localement seront effacés.',
+        btnResetConfirm: 'Réinitialiser',
+        notesTitle: 'Notes privées — {name}',
+        notesDesc: 'Notes strictement confidentielles visibles uniquement par le Super Admin.',
+        btnClose: 'Fermer',
+        toastWelcomeAdmin: 'Connecté en tant que Super Admin (WOLF TEAM).',
+        toastWelcomeWorker: 'Bienvenue sur WOLF TEAM, {name} !',
+        toastWorkerCreated: 'Profil travailleur créé : {name}.',
+        toastWorkerUpdated: 'Profil travailleur mis à jour.',
+        toastWorkerDeleted: 'Travailleur supprimé.',
+        toastTaskCreated: 'Tâche envoyée dans la discussion.',
+        toastTaskUpdated: 'Tâche mise à jour.',
+        toastTaskDeleted: 'Tâche supprimée.',
+        toastTask100: 'Tâche marquée terminée à 100% !',
+        toastProgressSaved: 'Progression enregistrée : {pct}%',
+        toastNotesSaved: 'Notes privées enregistrées.',
+        toastBackupSaved: 'Sauvegarde JSON téléchargée.',
+        toastBackupRestored: 'Sauvegarde restaurée avec succès.',
+        toastBackupInvalid: 'Fichier JSON invalide.',
+        toastStateReset: 'Données locales réinitialisées.',
+        errUsernameTaken: "Ce nom d'utilisateur est déjà utilisé.",
+        errTaskTitleRequired: 'Veuillez saisir un titre de tâche.',
+        sysDone: '{actor} a terminé "{title}" à 100%.',
+        sysProgress: '{actor} a mis à jour "{title}" à {pct}%.'
+      },
+      en: {
+        workspaceTag: 'COMMAND CENTER',
+        loginSubtitle: 'Secure sign-in — Task management & team discussion',
+        lblUsername: 'Username',
+        lblCode: 'Access Code',
+        btnLogin: 'Sign In',
+        btnResetState: 'Reset Local Data',
+        errBadCreds: 'Invalid username or access code.',
+        errEmptyCreds: 'Please enter your username and access code.',
+        roleSuperAdmin: 'Super Admin',
+        roleWorker: 'Worker',
+        tabChat: 'Chats',
+        tabStats: 'Statistics',
+        mnavRoster: 'Team',
+        mnavChat: 'Chats',
+        mnavStats: 'Stats',
+        btnLogout: 'Sign Out',
+        teamTitle: 'Team',
+        btnNewWorker: 'New',
+        searchWorkerPlaceholder: 'Search team member...',
+        exportJson: 'Backup',
+        importJson: 'Restore',
+        resetJson: 'Reset',
+        emptyAdminTitle: 'Welcome to WOLF TEAM',
+        emptyAdminDesc: 'Create a worker profile or select a member from the list to assign tasks and chat.',
+        btnCreateWorker: 'Create Worker',
+        btnNotes: 'Notes',
+        btnEdit: 'Edit',
+        btnDelete: 'Delete',
+        statAssigned: 'Assigned',
+        statCompleted: 'Completed',
+        statAvg: 'Progress',
+        btnAssignTask: 'Assign Task',
+        lblQuickPrio: 'Priority:',
+        workerHint: 'Choose your percentage or mark 100% complete directly inside each task card.',
+        chatPlaceholder: 'Write a message...',
+        btnSend: 'Send',
+        prio_low: 'Low',
+        prio_normal: 'Normal',
+        prio_high: 'High',
+        prio_urgent: 'Urgent',
+        filterAll: 'Show all',
+        filterTasks: 'Tasks only',
+        filterMessages: 'Messages only',
+        filterPending: 'In progress (< 100%)',
+        filterDone: 'Completed (100%)',
+        filterUrgent: 'Urgent only',
+        statusDone100: 'Completed 100%',
+        statusInProgress: 'In progress ({pct}%)',
+        statusTodo: 'To do (0%)',
+        createdAt: 'Created',
+        deadlinePrefix: 'Due:',
+        progressLabel: 'Progress',
+        adminReadOnlyNote: 'Live tracking — Controlled by worker (Super Admin read-only)',
+        btnMarkDone100: 'Mark 100% Done',
+        btnDone100Checked: 'Completed 100% ✓',
+        statsTitle: 'WOLF TEAM Statistics & Board',
+        statsSubtitle: 'Overview of tasks, priorities, worker performance, and read-only progress tracking.',
+        btnNewEmployee: 'New Employee',
+        kpiTotal: 'Total Tasks',
+        kpiTodo: 'Not Started (0%)',
+        kpiInProgress: 'In Progress (1–99%)',
+        kpiCompleted: 'Completed (100%)',
+        kpiUrgent: 'Urgent / High',
+        kpiAvgProgress: 'Average Progress',
+        chartStatusTitle: 'Breakdown by status',
+        chartPriorityTitle: 'Breakdown by priority',
+        leaderboardTitle: 'Worker statistics',
+        allTasksTitle: 'All Tasks',
+        modeList: 'Unique list',
+        modeGrouped: 'By worker',
+        allWorkersOpt: 'All workers',
+        allPrioritiesOpt: 'All priorities',
+        allStatusesOpt: 'All statuses',
+        statusOptTodo: 'To do (0%)',
+        statusOptProgress: 'In progress (1–99%)',
+        statusOptDone: 'Completed (100%)',
+        sortRecent: 'Sort: Most recent',
+        sortPriority: 'Sort: Priority',
+        sortPctAsc: 'Sort: % ascending',
+        sortPctDesc: 'Sort: % descending',
+        btnOpenChat: 'Open chat',
+        noWorkersYet: 'No workers created yet.',
+        noMatchingWorkers: 'No team member matches your search.',
+        noMatchingTasks: 'No tasks match the active filters.',
+        emptyFeed: 'No items in this conversation yet.',
+        modalNewWorker: 'Create Worker',
+        modalEditWorker: 'Edit Worker',
+        lblWFullname: 'Full name *',
+        lblWRole: 'Role / Job title *',
+        lblWUsername: 'Username *',
+        lblWCode: 'Access code *',
+        lblWColor: 'Avatar color',
+        btnCancel: 'Cancel',
+        btnSave: 'Save',
+        modalNewTask: 'New task for {name}',
+        modalEditTask: 'Edit Task',
+        lblTTaskTitle: 'Task title *',
+        lblTDesc: 'Description / Instructions',
+        lblTPrio: 'Priority *',
+        lblTDeadline: 'Due date',
+        btnSendTask: 'Send Task',
+        delWorkerTitle: 'Delete {name}?',
+        delWorkerDesc: 'This will permanently delete their profile, tasks, and chat history.',
+        delTaskTitle: 'Delete this task?',
+        delTaskDesc: 'This task card will be permanently removed.',
+        resetTitle: 'Reset local data?',
+        resetDesc: 'All locally saved worker accounts, tasks, and chat messages will be cleared.',
+        btnResetConfirm: 'Reset Data',
+        notesTitle: 'Private notes — {name}',
+        notesDesc: 'Confidential notes visible only to the Super Admin.',
+        btnClose: 'Close',
+        toastWelcomeAdmin: 'Signed in as Super Admin (WOLF TEAM).',
+        toastWelcomeWorker: 'Welcome to WOLF TEAM, {name}!',
+        toastWorkerCreated: 'Worker profile created: {name}.',
+        toastWorkerUpdated: 'Worker profile updated.',
+        toastWorkerDeleted: 'Worker deleted.',
+        toastTaskCreated: 'Task sent to the chat.',
+        toastTaskUpdated: 'Task updated.',
+        toastTaskDeleted: 'Task deleted.',
+        toastTask100: 'Task marked 100% completed!',
+        toastProgressSaved: 'Progress saved: {pct}%',
+        toastNotesSaved: 'Private notes saved.',
+        toastBackupSaved: 'JSON backup downloaded.',
+        toastBackupRestored: 'Backup restored successfully.',
+        toastBackupInvalid: 'Invalid JSON file.',
+        toastStateReset: 'Local data reset.',
+        errUsernameTaken: 'This username is already taken.',
+        errTaskTitleRequired: 'Please enter a task title.',
+        sysDone: '{actor} completed "{title}" at 100%.',
+        sysProgress: '{actor} updated "{title}" to {pct}%.'
+      },
+      ar: {
+        workspaceTag: 'مركز القيادة',
+        loginSubtitle: 'تسجيل دخول آمن — إدارة المهام ومحادثة الفريق',
+        lblUsername: 'اسم المستخدم',
+        lblCode: 'رمز الدخول',
+        btnLogin: 'تسجيل الدخول',
+        btnResetState: 'إعادة ضبط البيانات',
+        errBadCreds: 'اسم المستخدم أو رمز الدخول غير صحيح.',
+        errEmptyCreds: 'يرجى إدخال اسم المستخدم ورمز الدخول.',
+        roleSuperAdmin: 'المدير العام',
+        roleWorker: 'موظف',
+        tabChat: 'المحادثات',
+        tabStats: 'الإحصائيات',
+        mnavRoster: 'الفريق',
+        mnavChat: 'المحادثات',
+        mnavStats: 'الإحصائيات',
+        btnLogout: 'خروج',
+        teamTitle: 'الفريق',
+        btnNewWorker: 'جديد',
+        searchWorkerPlaceholder: 'بحث عن عضو...',
+        exportJson: 'نسخ احتياطي',
+        importJson: 'استعادة',
+        resetJson: 'إعادة ضبط',
+        emptyAdminTitle: 'مرحباً بك في WOLF TEAM',
+        emptyAdminDesc: 'أنشئ حساب موظف أو اختر عضواً من القائمة لإسناد المهام والبدء بالمحادثة.',
+        btnCreateWorker: 'إنشاء حساب موظف',
+        btnNotes: 'ملاحظات',
+        btnEdit: 'تعديل',
+        btnDelete: 'حذف',
+        statAssigned: 'المسندة',
+        statCompleted: 'المكتملة',
+        statAvg: 'الإنجاز',
+        btnAssignTask: 'إسناد مهمة',
+        lblQuickPrio: 'الأولوية:',
+        workerHint: 'اختر نسبة الإنجاز أو حدد 100% مكتملة مباشرة داخل بطاقة المهمة.',
+        chatPlaceholder: 'اكتب رسالة...',
+        btnSend: 'إرسال',
+        prio_low: 'منخفضة',
+        prio_normal: 'عادية',
+        prio_high: 'عالية',
+        prio_urgent: 'عاجلة',
+        filterAll: 'عرض الكل',
+        filterTasks: 'المهام فقط',
+        filterMessages: 'الرسائل فقط',
+        filterPending: 'قيد التنفيذ (< 100%)',
+        filterDone: 'مكتملة (100%)',
+        filterUrgent: 'العاجلة فقط',
+        statusDone100: 'مكتملة 100%',
+        statusInProgress: 'قيد التنفيذ ({pct}%)',
+        statusTodo: 'قيد الانتظار (0%)',
+        createdAt: 'تاريخ الإنشاء',
+        deadlinePrefix: 'الموعد:',
+        progressLabel: 'نسبة الإنجاز',
+        adminReadOnlyNote: 'متابعة مباشرة — يتحكم بها الموظف (للقراءة فقط للمدير العام)',
+        btnMarkDone100: 'إتمام 100%',
+        btnDone100Checked: 'مكتملة 100% ✓',
+        statsTitle: 'إحصائيات ولوحة WOLF TEAM',
+        statsSubtitle: 'نظرة شاملة على المهام والأولويات وأداء الموظفين والمتابعة المباشرة.',
+        btnNewEmployee: 'موظف جديد',
+        kpiTotal: 'إجمالي المهام',
+        kpiTodo: 'لم تبدأ (0%)',
+        kpiInProgress: 'قيد التنفيذ (1–99%)',
+        kpiCompleted: 'مكتملة (100%)',
+        kpiUrgent: 'عاجلة / عالية',
+        kpiAvgProgress: 'متوسط الإنجاز',
+        chartStatusTitle: 'التوزيع حسب الحالة',
+        chartPriorityTitle: 'التوزيع حسب الأولوية',
+        leaderboardTitle: 'إحصائيات كل موظف',
+        allTasksTitle: 'جميع المهام',
+        modeList: 'قائمة موحدة',
+        modeGrouped: 'حسب الموظف',
+        allWorkersOpt: 'جميع الموظفين',
+        allPrioritiesOpt: 'جميع الأولويات',
+        allStatusesOpt: 'جميع الحالات',
+        statusOptTodo: 'قيد الانتظار (0%)',
+        statusOptProgress: 'قيد التنفيذ (1–99%)',
+        statusOptDone: 'مكتملة (100%)',
+        sortRecent: 'ترتيب: الأحدث',
+        sortPriority: 'ترتيب: الأولوية',
+        sortPctAsc: 'ترتيب: النسبة تصاعدياً',
+        sortPctDesc: 'ترتيب: النسبة تنازلياً',
+        btnOpenChat: 'فتح المحادثة',
+        noWorkersYet: 'لا يوجد موظفون حتى الآن.',
+        noMatchingWorkers: 'لا يوجد عضو مطابق للبحث.',
+        noMatchingTasks: 'لا توجد مهام مطابقة للفلاتر.',
+        emptyFeed: 'لا توجد رسائل أو مهام في هذه المحادثة بعد.',
+        modalNewWorker: 'إنشاء حساب موظف',
+        modalEditWorker: 'تعديل بيانات الموظف',
+        lblWFullname: 'الاسم الكامل *',
+        lblWRole: 'الوظيفة / التخصص *',
+        lblWUsername: 'اسم المستخدم *',
+        lblWCode: 'رمز الدخول *',
+        lblWColor: 'لون الصورة الرمزية',
+        btnCancel: 'إلغاء',
+        btnSave: 'حفظ',
+        modalNewTask: 'مهمة جديدة للموظف {name}',
+        modalEditTask: 'تعديل المهمة',
+        lblTTaskTitle: 'عنوان المهمة *',
+        lblTDesc: 'التفاصيل / التعليمات',
+        lblTPrio: 'الأولوية *',
+        lblTDeadline: 'تاريخ التسليم',
+        btnSendTask: 'إرسال المهمة',
+        delWorkerTitle: 'حذف {name}؟',
+        delWorkerDesc: 'سيتم حذف حساب الموظف ومهامه وسجل المحادثة نهائياً.',
+        delTaskTitle: 'حذف هذه المهمة؟',
+        delTaskDesc: 'سيتم حذف بطاقة المهمة نهائياً.',
+        resetTitle: 'إعادة ضبط البيانات المحلية؟',
+        resetDesc: 'سيتم مسح جميع حسابات الموظفين والمهام والرسائل المحفوظة محلياً.',
+        btnResetConfirm: 'إعادة ضبط',
+        notesTitle: 'ملاحظات خاصة — {name}',
+        notesDesc: 'ملاحظات سرية تظهر للمدير العام فقط.',
+        btnClose: 'إغلاق',
+        toastWelcomeAdmin: 'تم تسجيل الدخول كمدير عام (WOLF TEAM).',
+        toastWelcomeWorker: 'مرحباً بك في WOLF TEAM، {name}!',
+        toastWorkerCreated: 'تم إنشاء حساب الموظف: {name}.',
+        toastWorkerUpdated: 'تم تحديث بيانات الموظف.',
+        toastWorkerDeleted: 'تم حذف الموظف.',
+        toastTaskCreated: 'تم إرسال المهمة إلى المحادثة.',
+        toastTaskUpdated: 'تم تحديث المهمة.',
+        toastTaskDeleted: 'تم حذف المهمة.',
+        toastTask100: 'تم تحديد المهمة كمكتملة 100%!',
+        toastProgressSaved: 'تم حفظ نسبة الإنجاز: {pct}%',
+        toastNotesSaved: 'تم حفظ الملاحظات الخاصة.',
+        toastBackupSaved: 'تم تحميل النسخة الاحتياطية JSON.',
+        toastBackupRestored: 'تمت استعادة البيانات بنجاح.',
+        toastBackupInvalid: 'ملف JSON غير صالح.',
+        toastStateReset: 'تمت إعادة ضبط البيانات المحلية.',
+        errUsernameTaken: 'اسم المستخدم هذا مستخدم بالفعل.',
+        errTaskTitleRequired: 'يرجى إدخال عنوان المهمة.',
+        sysDone: 'أنهى {actor} المهمة "{title}" بنسبة 100%.',
+        sysProgress: 'حدّث {actor} نسبة إنجاز "{title}" إلى {pct}%.'
+      }
+    };
+
+    /* =====================================================================
+       2. STATE, SANITIZATION & FAVICON INJECTION
+       ===================================================================== */
+    const appState = {
+      lang: 'fr',
+      theme: 'dark',
+      session: null,
+      adminTab: 'chat',
+      dashboardMode: 'list',
+      selectedWorkerId: null,
+      data: {
+        workers: [],
+        items: []
+      }
+    };
+
+    function applyDynamicFavicon() {
+      try {
+        const svgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><polygon points="32,3 57,14 52,42 32,60 12,42 7,14" fill="#061224" stroke="#22d3ee" stroke-width="3.5"/><polygon points="32,14 46,28 32,46 18,28" fill="#06b6d4"/><polygon points="18,28 32,34 32,46 22,38" fill="#f0f9ff"/><circle cx="26" cy="28" r="2.2" fill="#ffffff"/><circle cx="38" cy="28" r="2.2" fill="#ffffff"/></svg>`;
+        const link = document.createElement('link');
+        link.rel = 'icon';
+        link.type = 'image/svg+xml';
+        link.href = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgMarkup);
+        document.head.appendChild(link);
+      } catch {
+        // Non-critical favicon enhancement
+      }
+    }
+
+    function normalizePriority(val) {
+      const s = String(val || 'normal').toLowerCase().trim();
+      if (s === 'low' || s === 'basse') return 'low';
+      if (s === 'high' || s === 'haute') return 'high';
+      if (s === 'urgent' || s === 'urgente') return 'urgent';
+      return 'normal';
+    }
+
+    function clampPct(val) {
+      const num = Number(val);
+      if (!Number.isFinite(num)) return 0;
+      return Math.max(0, Math.min(100, Math.round(num)));
+    }
+
+    function loadPersistedData() {
+      try {
+        const raw = safeGet(STORAGE_KEY);
+        if (!raw) {
+          appState.data = { workers: [], items: [] };
+          return;
+        }
+        const parsed = JSON.parse(raw);
+        const workers = Array.isArray(parsed?.workers) ? parsed.workers : [];
+        const rawItems = Array.isArray(parsed?.items) ? parsed.items : [];
+
+        const seenWIds = new Set();
+        const cleanWorkers = [];
+        for (const w of workers) {
+          if (!w || typeof w.id !== 'string' || !w.id.trim() || seenWIds.has(w.id)) continue;
+          seenWIds.add(w.id);
+          cleanWorkers.push({
+            id: w.id,
+            fullName: String(w.fullName || ''),
+            role: String(w.role || ''),
+            username: String(w.username || '').trim(),
+            code: String(w.code || ''),
+            color: String(w.color || 'color-av-cyan'),
+            privateNotes: String(w.privateNotes || ''),
+            createdAt: String(w.createdAt || new Date().toISOString())
+          });
+        }
+
+        const seenIds = new Set();
+        const cleanItems = [];
+        for (const it of rawItems) {
+          if (!it || typeof it.id !== 'string' || !it.id.trim() || seenIds.has(it.id)) continue;
+          seenIds.add(it.id);
+
+          const type = it.type === 'task' ? 'task' : (it.type === 'system' ? 'system' : 'message');
+          const cleanItem = {
+            id: it.id,
+            workerId: String(it.workerId || ''),
+            type,
+            senderRole: it.senderRole === 'worker' ? 'worker' : 'admin',
+            createdAt: String(it.createdAt || new Date().toISOString())
+          };
+
+          if (type === 'task') {
+            cleanItem.title = String(it.title || '');
+            cleanItem.description = String(it.description || '');
+            cleanItem.priority = normalizePriority(it.priority);
+            cleanItem.deadline = it.deadline ? String(it.deadline) : '';
+            cleanItem.progress = clampPct(it.progress);
+          } else {
+            cleanItem.text = String(it.text || '');
+          }
+          cleanItems.push(cleanItem);
+        }
+
+        appState.data = { workers: cleanWorkers, items: cleanItems };
+      } catch (err) {
+        console.error('Failed to load state:', err);
+        appState.data = { workers: [], items: [] };
+      }
+    }
+
+    function savePersistedData() {
+      safeSet(STORAGE_KEY, JSON.stringify(appState.data));
+    }
+
+    function t(key, params = {}) {
+      const dict = I18N[appState.lang] || I18N.fr;
+      let str = Object.prototype.hasOwnProperty.call(dict, key) ? dict[key] : (I18N.fr[key] || key);
+      Object.keys(params).forEach((k) => {
+        str = str.replace(new RegExp(`\\{${k}\\}`, 'g'), String(params[k]));
+      });
+      return str;
+    }
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    function setPlaceholder(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.placeholder = value;
+    }
+
+    function escapeHtml(unsafe) {
+      return String(unsafe ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function getInitials(name) {
+      const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+      if (parts.length === 0) return 'WT';
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+
+    function formatDateTime(isoStr) {
+      try {
+        const d = new Date(isoStr);
+        if (Number.isNaN(d.getTime())) return '';
+        const locale = appState.lang === 'ar' ? 'ar-EG' : (appState.lang === 'en' ? 'en-US' : 'fr-FR');
+        return d.toLocaleString(locale, { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+      } catch {
+        return '';
+      }
+    }
+
+    function getWorkerById(id) {
+      return appState.data.workers.find((w) => w.id === id) || null;
+    }
+
+    function getDeduplicatedTasks() {
+      const seen = new Set();
+      return appState.data.items.filter((item) => {
+        if (!item || item.type !== 'task' || !item.id || seen.has(item.id)) return false;
+        seen.add(item.id);
+        return true;
+      });
+    }
+
+    /* =====================================================================
+       3. THEME & LANGUAGE (FR / EN / AR + RTL/LTR)
+       ===================================================================== */
+    function renderThemeIcons() {
+      const sunSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+      const moonSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+      const markup = appState.theme === 'dark' ? sunSvg : moonSvg;
+      const i1 = document.getElementById('login-theme-icon');
+      const i2 = document.getElementById('app-theme-icon');
+      if (i1) i1.innerHTML = markup;
+      if (i2) i2.innerHTML = markup;
+    }
+
+    function renderEyeIcon(isVisible) {
+      const openSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+      const closedSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+      const el = document.getElementById('login-eye-icon');
+      if (el) el.innerHTML = isVisible ? closedSvg : openSvg;
+    }
+
+    function initThemeAndLang() {
+      const savedTheme = safeGet(THEME_KEY);
+      appState.theme = savedTheme === 'light' ? 'light' : 'dark';
+      applyTheme();
+      renderEyeIcon(false);
+
+      const savedLang = safeGet(LANG_KEY);
+      appState.lang = ['fr', 'en', 'ar'].includes(savedLang) ? savedLang : 'fr';
+      applyLanguage(false);
+    }
+
+    function applyTheme() {
+      document.documentElement.setAttribute('data-theme', appState.theme);
+      safeSet(THEME_KEY, appState.theme);
+      renderThemeIcons();
+    }
+
+    function toggleTheme() {
+      appState.theme = appState.theme === 'dark' ? 'light' : 'dark';
+      applyTheme();
+    }
+
+    function setLanguage(lang) {
+      if (!['fr', 'en', 'ar'].includes(lang)) return;
+      appState.lang = lang;
+      safeSet(LANG_KEY, lang);
+      applyLanguage(true);
+    }
+
+    function applyLanguage(shouldRerender) {
+      document.documentElement.lang = appState.lang;
+      document.documentElement.dir = appState.lang === 'ar' ? 'rtl' : 'ltr';
+
+      document.querySelectorAll('.lang-btn').forEach((btn) => {
+        btn.classList.toggle('active', btn.getAttribute('data-lang-btn') === appState.lang);
+      });
+
+      setText('login-badge-text', t('workspaceTag'));
+      setText('login-subtitle', t('loginSubtitle'));
+      setText('lbl-login-username', t('lblUsername'));
+      setText('lbl-login-code', t('lblCode'));
+      setText('btn-login-submit', t('btnLogin'));
+      setText('btn-reset-state', t('btnResetState'));
+
+      setText('tab-label-chat', t('tabChat'));
+      setText('tab-label-stats', t('tabStats'));
+      setText('mnav-lbl-roster', t('mnavRoster'));
+      setText('mnav-lbl-chat', t('mnavChat'));
+      setText('mnav-lbl-stats', t('mnavStats'));
+      setText('btn-logout-label', t('btnLogout'));
+      setText('btn-new-worker', t('btnNewWorker'));
+      setPlaceholder('worker-search-input', t('searchWorkerPlaceholder'));
+      setText('lbl-export-json', t('exportJson'));
+      setText('lbl-import-json', t('importJson'));
+      setText('lbl-reset-json', t('resetJson'));
+
+      setText('empty-admin-title', t('emptyAdminTitle'));
+      setText('empty-admin-desc', t('emptyAdminDesc'));
+      setText('btn-empty-create-worker', t('btnCreateWorker'));
+
+      setText('btn-private-notes', t('btnNotes'));
+      setText('btn-edit-worker', t('btnEdit'));
+      setText('btn-delete-worker', t('btnDelete'));
+      setText('lbl-stat-assigned', t('statAssigned'));
+      setText('lbl-stat-completed', t('statCompleted'));
+      setText('lbl-stat-avg', t('statAvg'));
+      setText('btn-assign-task', t('btnAssignTask'));
+      setText('lbl-quick-prio', t('lblQuickPrio'));
+      setText('lbl-worker-hint', t('workerHint'));
+      setPlaceholder('chat-message-input', t('chatPlaceholder'));
+      setText('btn-send-msg', t('btnSend'));
+
+      setText('stats-main-title', t('statsTitle'));
+      setText('stats-main-subtitle', t('statsSubtitle'));
+      setText('btn-stats-new-worker', t('btnNewEmployee'));
+      setText('chart-status-title', t('chartStatusTitle'));
+      setText('chart-priority-title', t('chartPriorityTitle'));
+      setText('leaderboard-heading', t('leaderboardTitle'));
+      setText('lbl-mode-list', t('modeList'));
+      setText('lbl-mode-grouped', t('modeGrouped'));
+
+      const allTasksHeading = document.getElementById('all-tasks-heading');
+      if (allTasksHeading) {
+        const cntEl = document.getElementById('dash-tasks-count');
+        const cntVal = cntEl ? cntEl.textContent : '0';
+        allTasksHeading.innerHTML = `${escapeHtml(t('allTasksTitle'))} (<span id="dash-tasks-count">${escapeHtml(cntVal)}</span>)`;
+      }
+
+      setText('lbl-w-fullname', t('lblWFullname'));
+      setText('lbl-w-role', t('lblWRole'));
+      setText('lbl-w-username', t('lblWUsername'));
+      setText('lbl-w-code', t('lblWCode'));
+      setText('lbl-w-color', t('lblWColor'));
+      setText('btn-w-cancel', t('btnCancel'));
+      setText('lbl-t-title', t('lblTTaskTitle'));
+      setText('lbl-t-desc', t('lblTDesc'));
+      setText('lbl-t-prio', t('lblTPrio'));
+      setText('lbl-t-deadline', t('lblTDeadline'));
+      setText('btn-t-cancel', t('btnCancel'));
+      setText('btn-del-w-cancel', t('btnCancel'));
+      setText('btn-del-w-confirm', t('btnDelete'));
+      setText('btn-del-t-cancel', t('btnCancel'));
+      setText('btn-del-t-confirm', t('btnDelete'));
+      setText('reset-modal-title', t('resetTitle'));
+      setText('reset-modal-desc', t('resetDesc'));
+      setText('btn-reset-cancel', t('btnCancel'));
+      setText('btn-reset-confirm', t('btnResetConfirm'));
+      setText('notes-modal-desc', t('notesDesc'));
+      setText('btn-notes-cancel', t('btnClose'));
+      setText('btn-notes-save', t('btnSave'));
+
+      syncSelectOptions();
+
+      if (shouldRerender && appState.session) {
+        renderAuthenticatedApp();
+      }
+    }
+
+    function syncSelectOptions() {
+      const quickPrio = document.getElementById('composer-quick-priority');
+      if (quickPrio) {
+        const cur = normalizePriority(quickPrio.value);
+        quickPrio.innerHTML = `
+          <option value="low">${escapeHtml(t('prio_low'))}</option>
+          <option value="normal">${escapeHtml(t('prio_normal'))}</option>
+          <option value="high">${escapeHtml(t('prio_high'))}</option>
+          <option value="urgent">${escapeHtml(t('prio_urgent'))}</option>
+        `;
+        quickPrio.value = cur;
+      }
+
+      const taskModalPrio = document.getElementById('task-priority-input');
+      if (taskModalPrio) {
+        const cur = normalizePriority(taskModalPrio.value);
+        taskModalPrio.innerHTML = `
+          <option value="low">${escapeHtml(t('prio_low'))}</option>
+          <option value="normal">${escapeHtml(t('prio_normal'))}</option>
+          <option value="high">${escapeHtml(t('prio_high'))}</option>
+          <option value="urgent">${escapeHtml(t('prio_urgent'))}</option>
+        `;
+        taskModalPrio.value = cur;
+      }
+
+      ['chat-filter-select', 'worker-chat-filter-select'].forEach((id) => {
+        const sel = document.getElementById(id);
+        if (!sel) return;
+        const cur = sel.value || 'all';
+        sel.innerHTML = `
+          <option value="all">${escapeHtml(t('filterAll'))}</option>
+          <option value="tasks">${escapeHtml(t('filterTasks'))}</option>
+          <option value="messages">${escapeHtml(t('filterMessages'))}</option>
+          <option value="pending">${escapeHtml(t('filterPending'))}</option>
+          <option value="done">${escapeHtml(t('filterDone'))}</option>
+          <option value="urgent">${escapeHtml(t('filterUrgent'))}</option>
+        `;
+        sel.value = cur;
+      });
+
+      const dashWorkerSel = document.getElementById('dash-filter-worker');
+      if (dashWorkerSel) {
+        const cur = dashWorkerSel.value || 'all';
+        dashWorkerSel.innerHTML = `<option value="all">${escapeHtml(t('allWorkersOpt'))}</option>` +
+          appState.data.workers.map((w) => `<option value="${escapeHtml(w.id)}">${escapeHtml(w.fullName)}</option>`).join('');
+        dashWorkerSel.value = appState.data.workers.some((w) => w.id === cur) ? cur : 'all';
+      }
+
+      const dashPrioSel = document.getElementById('dash-filter-priority');
+      if (dashPrioSel) {
+        const cur = dashPrioSel.value || 'all';
+        dashPrioSel.innerHTML = `
+          <option value="all">${escapeHtml(t('allPrioritiesOpt'))}</option>
+          <option value="urgent">${escapeHtml(t('prio_urgent'))}</option>
+          <option value="high">${escapeHtml(t('prio_high'))}</option>
+          <option value="normal">${escapeHtml(t('prio_normal'))}</option>
+          <option value="low">${escapeHtml(t('prio_low'))}</option>
+        `;
+        dashPrioSel.value = cur;
+      }
+
+      const dashStatusSel = document.getElementById('dash-filter-status');
+      if (dashStatusSel) {
+        const cur = dashStatusSel.value || 'all';
+        dashStatusSel.innerHTML = `
+          <option value="all">${escapeHtml(t('allStatusesOpt'))}</option>
+          <option value="todo">${escapeHtml(t('statusOptTodo'))}</option>
+          <option value="progress">${escapeHtml(t('statusOptProgress'))}</option>
+          <option value="done">${escapeHtml(t('statusOptDone'))}</option>
+        `;
+        dashStatusSel.value = cur;
+      }
+
+      const dashSortSel = document.getElementById('dash-sort-by');
+      if (dashSortSel) {
+        const cur = dashSortSel.value || 'recent';
+        dashSortSel.innerHTML = `
+          <option value="recent">${escapeHtml(t('sortRecent'))}</option>
+          <option value="priority">${escapeHtml(t('sortPriority'))}</option>
+          <option value="pct_asc">${escapeHtml(t('sortPctAsc'))}</option>
+          <option value="pct_desc">${escapeHtml(t('sortPctDesc'))}</option>
+        `;
+        dashSortSel.value = cur;
+      }
+    }
+
+    /* =====================================================================
+       4. AUTHENTICATION & NAVIGATION FLOW
+       ===================================================================== */
+    function togglePasswordVisibility(inputId) {
+      const inp = document.getElementById(inputId);
+      if (!inp) return;
+      const nextVisible = inp.type === 'password';
+      inp.type = nextVisible ? 'text' : 'password';
+      renderEyeIcon(nextVisible);
+    }
+
+    function showLoginError(msg) {
+      const box = document.getElementById('login-error-box');
+      const txt = document.getElementById('login-error-text');
+      if (txt) txt.textContent = msg;
+      if (box) box.classList.remove('hidden');
+    }
+
+    function hideLoginError() {
+      const box = document.getElementById('login-error-box');
+      if (box) box.classList.add('hidden');
+    }
+
+    function handleLoginSubmit(event) {
+      event.preventDefault();
+      hideLoginError();
+
+      const uEl = document.getElementById('login-username');
+      const cEl = document.getElementById('login-code');
+      const username = (uEl ? uEl.value : '').trim();
+      const code = (cEl ? cEl.value : '').trim();
+
+      if (!username || !code) {
+        showLoginError(t('errEmptyCreds'));
+        return;
+      }
+
+      if (username === SUPER_ADMIN.username && code === SUPER_ADMIN.code) {
+        appState.session = { role: 'admin' };
+        appState.adminTab = 'chat';
+        if (!appState.selectedWorkerId && appState.data.workers.length > 0) {
+          appState.selectedWorkerId = appState.data.workers[0].id;
+        }
+        if (uEl) uEl.value = '';
+        if (cEl) cEl.value = '';
+        switchToAppView();
+        showToast(t('toastWelcomeAdmin'), 'success');
+        return;
+      }
+
+      const matchedWorker = appState.data.workers.find(
+        (w) => w.username === username && w.code === code
+      );
+      if (matchedWorker) {
+        appState.session = { role: 'worker', workerId: matchedWorker.id };
+        appState.selectedWorkerId = matchedWorker.id;
+        if (uEl) uEl.value = '';
+        if (cEl) cEl.value = '';
+        switchToAppView();
+        showToast(t('toastWelcomeWorker', { name: matchedWorker.fullName }), 'success');
+        return;
+      }
+
+      showLoginError(t('errBadCreds'));
+    }
+
+    function logoutUser() {
+      appState.session = null;
+      closeMobileSidebar();
+      document.getElementById('app-view').classList.add('hidden');
+      document.getElementById('login-view').classList.remove('hidden');
+      hideLoginError();
+    }
+
+    function switchToAppView() {
+      document.getElementById('login-view').classList.add('hidden');
+      document.getElementById('app-view').classList.remove('hidden');
+      renderAuthenticatedApp();
+    }
+
+    function updateMobileBottomNav() {
+      const mnav = document.getElementById('mobile-bottom-nav');
+      const rosterBtn = document.getElementById('mnav-roster');
+      const chatBtn = document.getElementById('mnav-chat');
+      const statsBtn = document.getElementById('mnav-stats');
+      if (!mnav || !appState.session) return;
+
+      const isAdmin = appState.session.role === 'admin';
+      rosterBtn.classList.toggle('hidden', !isAdmin);
+      statsBtn.classList.toggle('hidden', !isAdmin);
+
+      if (isAdmin) {
+        mnav.style.gridTemplateColumns = 'repeat(3, minmax(0, 1fr))';
+        chatBtn.classList.toggle('active', appState.adminTab === 'chat');
+        statsBtn.classList.toggle('active', appState.adminTab === 'stats');
+        rosterBtn.classList.remove('active');
+      } else {
+        mnav.style.gridTemplateColumns = 'minmax(0, 1fr)';
+        chatBtn.classList.add('active');
+      }
+    }
+
+    function handleMobileNav(target) {
+      if (!appState.session) return;
+      if (appState.session.role === 'admin') {
+        if (target === 'roster') {
+          appState.adminTab = 'chat';
+          switchAdminView('chat', true);
+          const sb = document.getElementById('workers-sidebar');
+          const bd = document.getElementById('sidebar-backdrop');
+          if (sb && bd) {
+            sb.classList.add('open');
+            bd.classList.add('open');
+          }
+        } else if (target === 'chat') {
+          closeMobileSidebar();
+          switchAdminView('chat', true);
+        } else if (target === 'stats') {
+          closeMobileSidebar();
+          switchAdminView('stats', true);
+        }
+      } else {
+        const slot = document.getElementById('worker-chat-slot');
+        if (slot) slot.scrollIntoView({ behavior: 'smooth' });
+      }
+      updateMobileBottomNav();
+    }
+
+    /* =====================================================================
+       5. RENDERING WORKSPACES (SUPER ADMIN & WORKER)
+       ===================================================================== */
+    function renderAuthenticatedApp() {
+      try {
+        syncSelectOptions();
+        if (!appState.session) return;
+
+        const adminLogoWrap = document.getElementById('header-admin-logo-wrap');
+        const workerAv = document.getElementById('header-worker-avatar');
+
+        if (appState.session.role === 'admin') {
+          if (adminLogoWrap) adminLogoWrap.classList.remove('hidden');
+          if (workerAv) workerAv.classList.add('hidden');
+          setText('header-role-label', `${SUPER_ADMIN.displayName} • ${t('roleSuperAdmin')}`);
+          document.getElementById('admin-nav-tabs').classList.remove('hidden');
+          document.getElementById('admin-workspace').classList.remove('hidden');
+          document.getElementById('worker-workspace').classList.add('hidden');
+          switchAdminView(appState.adminTab, false);
+        } else {
+          const worker = getWorkerById(appState.session.workerId);
+          if (!worker) {
+            logoutUser();
+            return;
+          }
+          if (adminLogoWrap) adminLogoWrap.classList.add('hidden');
+          if (workerAv) {
+            workerAv.className = `avatar-circle sm ${worker.color || 'color-av-cyan'}`;
+            workerAv.textContent = getInitials(worker.fullName);
+            workerAv.classList.remove('hidden');
+          }
+          setText('header-role-label', `${worker.fullName} • ${t('roleWorker')}`);
+          document.getElementById('admin-nav-tabs').classList.add('hidden');
+          document.getElementById('admin-workspace').classList.add('hidden');
+          document.getElementById('worker-workspace').classList.remove('hidden');
+          renderWorkerWorkspace(worker);
+        }
+
+        updateMobileBottomNav();
+      } catch (err) {
+        console.error('Error rendering workspace:', err);
+      }
+    }
+
+    function switchAdminView(tabName, updateState = true) {
+      if (updateState) {
+        appState.adminTab = tabName === 'stats' ? 'stats' : 'chat';
+      }
+      closeMobileSidebar();
+
+      const isStats = appState.adminTab === 'stats';
+      document.getElementById('tab-btn-chat').classList.toggle('active', !isStats);
+      document.getElementById('tab-btn-stats').classList.toggle('active', isStats);
+
+      document.getElementById('admin-chat-view').classList.toggle('hidden', isStats);
+      document.getElementById('admin-stats-view').classList.toggle('hidden', !isStats);
+
+      updateMobileBottomNav();
+
+      if (isStats) {
+        renderAdminDashboard();
+      } else {
+        renderAdminChatWorkspace();
+      }
+    }
+
+    function renderAdminChatWorkspace() {
+      renderWorkersSidebar();
+      if (!appState.selectedWorkerId || !getWorkerById(appState.selectedWorkerId)) {
+        appState.selectedWorkerId = appState.data.workers.length > 0 ? appState.data.workers[0].id : null;
+      }
+
+      const activeWorker = appState.selectedWorkerId ? getWorkerById(appState.selectedWorkerId) : null;
+      const noWorkerEl = document.getElementById('admin-no-worker-state');
+      const chatContainerEl = document.getElementById('chat-active-container');
+
+      if (!activeWorker) {
+        noWorkerEl.classList.remove('hidden');
+        chatContainerEl.classList.add('hidden');
+        return;
+      }
+
+      noWorkerEl.classList.add('hidden');
+      chatContainerEl.classList.remove('hidden');
+
+      document.getElementById('admin-worker-actions').classList.remove('hidden');
+      document.getElementById('worker-self-filter-wrap').classList.add('hidden');
+      document.getElementById('admin-task-composer-bar').classList.remove('hidden');
+      document.getElementById('worker-info-strip').classList.add('hidden');
+
+      const pane = document.getElementById('active-chat-pane');
+      const adminGrid = document.getElementById('admin-chat-view');
+      if (pane && adminGrid && pane.parentElement !== adminGrid) {
+        adminGrid.appendChild(pane);
+      }
+
+      renderChatHeaderAndStats(activeWorker);
+      renderChatFeed();
+    }
+
+    function renderWorkerWorkspace(worker) {
+      const pane = document.getElementById('active-chat-pane');
+      const slot = document.getElementById('worker-chat-slot');
+      if (pane && slot && pane.parentElement !== slot) {
+        slot.appendChild(pane);
+      }
+
+      document.getElementById('admin-no-worker-state').classList.add('hidden');
+      document.getElementById('chat-active-container').classList.remove('hidden');
+      document.getElementById('admin-worker-actions').classList.add('hidden');
+      document.getElementById('worker-self-filter-wrap').classList.remove('hidden');
+      document.getElementById('admin-task-composer-bar').classList.add('hidden');
+      document.getElementById('worker-info-strip').classList.remove('hidden');
+
+      renderWorkerPersonalStats(worker);
+      renderChatHeaderAndStats(worker);
+      renderChatFeed();
+    }
+
+    function computeWorkerMetrics(workerId) {
+      const tasks = getDeduplicatedTasks().filter((item) => item.workerId === workerId);
+      const total = tasks.length;
+      const done = tasks.filter((item) => clampPct(item.progress) === 100).length;
+      const inProgress = tasks.filter((item) => {
+        const p = clampPct(item.progress);
+        return p > 0 && p < 100;
+      }).length;
+      const avg = total === 0 ? 0 : Math.round(tasks.reduce((sum, item) => sum + clampPct(item.progress), 0) / total);
+      return { total, done, inProgress, avg };
+    }
+
+    function renderWorkerPersonalStats(worker) {
+      const box = document.getElementById('worker-personal-stats');
+      if (!box) return;
+      const m = computeWorkerMetrics(worker.id);
+      box.innerHTML = `
+        <div class="kpi-grid">
+          <div class="surface-card">
+            <span class="mini-stat-label">${escapeHtml(t('statAssigned'))}</span>
+            <div class="kpi-val">${m.total}</div>
+          </div>
+          <div class="surface-card">
+            <span class="mini-stat-label">${escapeHtml(t('kpiInProgress'))}</span>
+            <div class="kpi-val" style="color: var(--warning);">${m.inProgress}</div>
+          </div>
+          <div class="surface-card">
+            <span class="mini-stat-label">${escapeHtml(t('statCompleted'))}</span>
+            <div class="kpi-val" style="color: var(--success);">${m.done}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderWorkersSidebar() {
+      const listEl = document.getElementById('workers-list');
+      const titleEl = document.getElementById('sidebar-team-title');
+      if (!listEl) return;
+
+      const q = (document.getElementById('worker-search-input')?.value || '').trim().toLowerCase();
+      const workers = appState.data.workers;
+
+      if (titleEl) {
+        titleEl.innerHTML = `${escapeHtml(t('teamTitle'))} (<span id="workers-count-badge">${workers.length}</span>)`;
+      }
+
+      const filtered = workers.filter((w) => {
+        if (!q) return true;
+        return (
+          w.fullName.toLowerCase().includes(q) ||
+          w.role.toLowerCase().includes(q) ||
+          w.username.toLowerCase().includes(q)
+        );
+      });
+
+      if (workers.length === 0) {
+        listEl.innerHTML = `<div style="padding: 24px 12px; text-align: center; font-size: 0.84rem; color: var(--text-muted);">${escapeHtml(t('noWorkersYet'))}</div>`;
+        return;
+      }
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `<div style="padding: 24px 12px; text-align: center; font-size: 0.84rem; color: var(--text-muted);">${escapeHtml(t('noMatchingWorkers'))}</div>`;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map((w) => {
+        const isActive = w.id === appState.selectedWorkerId;
+        const m = computeWorkerMetrics(w.id);
+        return `
+          <button type="button" class="worker-card-item ${isActive ? 'active' : ''}" onclick="selectWorker('${escapeHtml(w.id)}')">
+            <div class="avatar-circle md ${escapeHtml(w.color)}">${escapeHtml(getInitials(w.fullName))}</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                <span style="font-weight: 800; font-size: 0.86rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(w.fullName)}</span>
+                <span style="font-size: 0.74rem; font-weight: 900; color: ${m.avg === 100 && m.total > 0 ? 'var(--success)' : 'var(--accent-hover)'}; flex-shrink: 0;">${m.avg}%</span>
+              </div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                ${escapeHtml(w.role)} • @${escapeHtml(w.username)}
+              </div>
+              <div class="task-progress-track" style="height: 5px; margin-top: 6px;">
+                <div class="task-progress-fill" style="width: ${m.avg}%; background: ${m.avg === 100 && m.total > 0 ? 'var(--success)' : 'var(--accent-hover)'};"></div>
+              </div>
+            </div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectWorker(workerId) {
+      appState.selectedWorkerId = workerId;
+      appState.adminTab = 'chat';
+      closeMobileSidebar();
+      renderAuthenticatedApp();
+    }
+
+    function toggleMobileSidebar() {
+      const sb = document.getElementById('workers-sidebar');
+      const bd = document.getElementById('sidebar-backdrop');
+      if (!sb || !bd) return;
+      const opening = !sb.classList.contains('open');
+      sb.classList.toggle('open', opening);
+      bd.classList.toggle('open', opening);
+    }
+
+    function closeMobileSidebar() {
+      const sb = document.getElementById('workers-sidebar');
+      const bd = document.getElementById('sidebar-backdrop');
+      if (sb) sb.classList.remove('open');
+      if (bd) bd.classList.remove('open');
+    }
+
+    function renderChatHeaderAndStats(worker) {
+      const av = document.getElementById('chat-target-avatar');
+      if (av) {
+        av.className = `avatar-circle md ${worker.color || 'color-av-cyan'}`;
+        av.textContent = getInitials(worker.fullName);
+      }
+      setText('chat-target-name', worker.fullName);
+      setText('chat-target-username', `@${worker.username}`);
+      setText('chat-target-role', worker.role);
+
+      const m = computeWorkerMetrics(worker.id);
+      setText('stat-worker-assigned', String(m.total));
+      setText('stat-worker-completed', String(m.done));
+      setText('stat-worker-avg', `${m.avg}%`);
+    }
+
+    function getActiveFilterValue() {
+      if (appState.session?.role === 'worker') {
+        return document.getElementById('worker-chat-filter-select')?.value || 'all';
+      }
+      return document.getElementById('chat-filter-select')?.value || 'all';
+    }
+
+    function renderChatFeed() {
+      const feed = document.getElementById('chat-feed');
+      if (!feed || !appState.selectedWorkerId) return;
+
+      const isAdmin = appState.session?.role === 'admin';
+      const filter = getActiveFilterValue();
+
+      let items = appState.data.items.filter((i) => i.workerId === appState.selectedWorkerId);
+      if (filter === 'tasks') items = items.filter((i) => i.type === 'task');
+      else if (filter === 'messages') items = items.filter((i) => i.type === 'message');
+      else if (filter === 'pending') items = items.filter((i) => i.type === 'task' && clampPct(i.progress) < 100);
+      else if (filter === 'done') items = items.filter((i) => i.type === 'task' && clampPct(i.progress) === 100);
+      else if (filter === 'urgent') items = items.filter((i) => i.type === 'task' && normalizePriority(i.priority) === 'urgent');
+
+      if (items.length === 0) {
+        feed.innerHTML = `<div style="margin: auto; text-align: center; padding: 32px 16px; color: var(--text-muted); font-size: 0.88rem;">${escapeHtml(t('emptyFeed'))}</div>`;
+        return;
+      }
+
+      feed.innerHTML = items.map((item) => {
+        if (item.type === 'system') {
+          return `<div class="sys-pill">${escapeHtml(item.text)}</div>`;
+        }
+
+        if (item.type === 'message') {
+          const isOutgoing = (isAdmin && item.senderRole === 'admin') || (!isAdmin && item.senderRole === 'worker');
+          return `
+            <div class="msg-row ${isOutgoing ? 'outgoing' : 'incoming'}">
+              <div class="msg-bubble ${isOutgoing ? 'outgoing' : 'incoming'}">
+                <div style="font-size: 0.88rem; white-space: pre-wrap;">${escapeHtml(item.text)}</div>
+                <div style="font-size: 0.67rem; opacity: 0.78; margin-top: 4px; text-align: end;">${escapeHtml(formatDateTime(item.createdAt))}</div>
+              </div>
+            </div>
+          `;
+        }
+
+        const pct = clampPct(item.progress);
+        const isDone = pct === 100;
+        const prio = normalizePriority(item.priority);
+        const prioLabel = t(`prio_${prio}`);
+
+        const statusCls = isDone ? 'done' : (pct > 0 ? 'progress' : 'todo');
+        const statusText = isDone
+          ? t('statusDone100')
+          : (pct > 0 ? t('statusInProgress', { pct }) : t('statusTodo'));
+
+        const barColor = isDone
+          ? 'var(--success)'
+          : (prio === 'urgent' ? 'var(--danger)' : (prio === 'high' ? 'var(--warning)' : 'var(--accent-hover)'));
+
+        const adminControlsHtml = isAdmin ? `
+          <div style="display: inline-flex; align-items: center; gap: 5px;">
+            <button type="button" class="icon-btn" style="min-height: 34px; min-width: 34px; padding: 0; font-size: 0.76rem;" onclick="openEditTaskModal('${escapeHtml(item.id)}')" title="${escapeHtml(t('btnEdit'))}" aria-label="${escapeHtml(t('btnEdit'))}">✎</button>
+            <button type="button" class="icon-btn" style="min-height: 34px; min-width: 34px; padding: 0; font-size: 0.78rem; color: var(--danger);" onclick="openDeleteTaskModal('${escapeHtml(item.id)}')" title="${escapeHtml(t('btnDelete'))}" aria-label="${escapeHtml(t('btnDelete'))}">🗑</button>
+          </div>
+        ` : '';
+
+        // Strictly read-only progress for Super Admin; interactive slider, presets & 100% button for Worker
+        const progressActionHtml = isAdmin ? `
+          <div class="readonly-lock-banner" style="margin-top: 10px;">
+            <span>🔒</span>
+            <span>${escapeHtml(t('adminReadOnlyNote'))}</span>
+          </div>
+        ` : `
+          <div class="worker-controls-box" style="margin-top: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+              <span style="font-size: 0.78rem; font-weight: 800; color: var(--text-secondary);">${escapeHtml(t('progressLabel'))}: <strong id="live-pct-label-${escapeHtml(item.id)}">${pct}%</strong></span>
+              <button type="button"
+                onclick="markTaskCompleted100('${escapeHtml(item.id)}')"
+                class="${isDone ? 'btn-secondary' : 'btn-primary'}"
+                style="min-height: 38px; padding: 6px 13px; font-size: 0.78rem; ${isDone ? 'background: var(--success-soft); color: var(--success); border-color: var(--success); box-shadow: none;' : 'background: linear-gradient(135deg, #10b981, #059669); border-color: rgba(16, 185, 129, 0.45); box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);'}">
+                <span>${escapeHtml(isDone ? t('btnDone100Checked') : t('btnMarkDone100'))}</span>
+              </button>
+            </div>
+
+            <input type="range" min="0" max="100" step="1" value="${pct}" class="wolf-slider"
+              aria-label="${escapeHtml(item.title)}"
+              oninput="previewTaskSlider('${escapeHtml(item.id)}', this.value)"
+              onchange="commitTaskSlider('${escapeHtml(item.id)}', this.value)" />
+
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              ${[0, 25, 50, 75, 100].map((preset) => `
+                <button type="button" class="icon-btn" style="min-height: 36px; padding: 0 11px; font-size: 0.75rem; ${pct === preset ? 'border-color: var(--accent-hover); background: var(--accent-soft); color: var(--accent-hover);' : ''}"
+                  onclick="setTaskProgressValue('${escapeHtml(item.id)}', ${preset})">${preset}%</button>
+              `).join('')}
+            </div>
+          </div>
+        `;
+
+        return `
+          <div class="msg-row incoming">
+            <article class="task-card-bubble ${isDone ? 'completed' : ''} prio-${prio}">
+              <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                  <span class="prio-badge ${prio}">${escapeHtml(prioLabel)}</span>
+                  <span class="status-badge ${statusCls}">${escapeHtml(statusText)}</span>
+                </div>
+                ${adminControlsHtml}
+              </div>
+
+              <h4 style="margin: 8px 0 4px; font-size: 1rem; font-weight: 800;">${escapeHtml(item.title)}</h4>
+              ${item.description ? `<p style="margin: 0 0 8px; font-size: 0.85rem; color: var(--text-secondary); white-space: pre-wrap;">${escapeHtml(item.description)}</p>` : ''}
+
+              <div style="display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.73rem; color: var(--text-muted); margin-bottom: 8px;">
+                <span>${escapeHtml(t('createdAt'))} ${escapeHtml(formatDateTime(item.createdAt))}</span>
+                ${item.deadline ? `<span>${escapeHtml(t('deadlinePrefix'))} ${escapeHtml(item.deadline)}</span>` : ''}
+              </div>
+
+              <div class="task-progress-track">
+                <div id="live-bar-fill-${escapeHtml(item.id)}" class="task-progress-fill" style="width: ${pct}%; background: ${barColor};"></div>
+              </div>
+
+              ${progressActionHtml}
+            </article>
+          </div>
+        `;
+      }).join('');
+
+      feed.scrollTop = feed.scrollHeight;
+    }
+
+    /* =====================================================================
+       6. MESSAGES & WORKER TASK PROGRESS UPDATES
+       ===================================================================== */
+    function handleSendMessage(event) {
+      event.preventDefault();
+      if (!appState.session || !appState.selectedWorkerId) return;
+
+      const input = document.getElementById('chat-message-input');
+      const text = (input ? input.value : '').trim();
+      if (!text) return;
+
+      const senderRole = appState.session.role === 'admin' ? 'admin' : 'worker';
+      appState.data.items.push({
+        id: 'msg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+        workerId: appState.selectedWorkerId,
+        type: 'message',
+        senderRole,
+        text,
+        createdAt: new Date().toISOString()
+      });
+
+      savePersistedData();
+      if (input) input.value = '';
+      renderChatFeed();
+    }
+
+    function previewTaskSlider(taskId, val) {
+      if (appState.session?.role !== 'worker') return;
+      const pct = clampPct(val);
+      const lbl = document.getElementById(`live-pct-label-${taskId}`);
+      const bar = document.getElementById(`live-bar-fill-${taskId}`);
+      if (lbl) lbl.textContent = `${pct}%`;
+      if (bar) {
+        bar.style.width = `${pct}%`;
+        if (pct === 100) bar.style.background = 'var(--success)';
+      }
+    }
+
+    function commitTaskSlider(taskId, val) {
+      setTaskProgressValue(taskId, clampPct(val));
+    }
+
+    function markTaskCompleted100(taskId) {
+      setTaskProgressValue(taskId, 100);
+    }
+
+    function setTaskProgressValue(taskId, newPct) {
+      if (!appState.session || appState.session.role !== 'worker') return;
+
+      const pct = clampPct(newPct);
+      const task = appState.data.items.find((i) => i.id === taskId && i.type === 'task');
+      if (!task) return;
+
+      const prevPct = clampPct(task.progress);
+      if (prevPct === pct) return;
+
+      task.progress = pct;
+
+      const worker = getWorkerById(task.workerId);
+      const actorName = worker ? worker.fullName : t('roleWorker');
+      const sysText = pct === 100
+        ? t('sysDone', { actor: actorName, title: task.title })
+        : t('sysProgress', { actor: actorName, title: task.title, pct });
+
+      appState.data.items.push({
+        id: 'sys-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+        workerId: task.workerId,
+        type: 'system',
+        senderRole: 'worker',
+        text: sysText,
+        createdAt: new Date().toISOString()
+      });
+
+      savePersistedData();
+      if (worker) {
+        renderWorkerPersonalStats(worker);
+        renderChatHeaderAndStats(worker);
+      }
+      renderChatFeed();
+      showToast(pct === 100 ? t('toastTask100') : t('toastProgressSaved', { pct }), 'success');
+    }
+
+    /* =====================================================================
+       7. GLOBAL STATISTICS, SVG CHARTS & DEDUPLICATED TASK VIEWS
+       ===================================================================== */
+    function setDashboardMode(mode) {
+      appState.dashboardMode = mode === 'grouped' ? 'grouped' : 'list';
+      document.getElementById('mode-btn-list').classList.toggle('active', appState.dashboardMode === 'list');
+      document.getElementById('mode-btn-grouped').classList.toggle('active', appState.dashboardMode === 'grouped');
+      renderAdminDashboard();
+    }
+
+    function renderAdminDashboard() {
+      syncSelectOptions();
+
+      const tasks = getDeduplicatedTasks();
+      const total = tasks.length;
+      const done = tasks.filter((item) => clampPct(item.progress) === 100).length;
+      const inProg = tasks.filter((item) => {
+        const p = clampPct(item.progress);
+        return p > 0 && p < 100;
+      }).length;
+      const todo = tasks.filter((item) => clampPct(item.progress) === 0).length;
+      const urgentHigh = tasks.filter((item) => {
+        const pr = normalizePriority(item.priority);
+        return pr === 'urgent' || pr === 'high';
+      }).length;
+      const avg = total === 0 ? 0 : Math.round(tasks.reduce((s, item) => s + clampPct(item.progress), 0) / total);
+
+      const kpiGrid = document.getElementById('stats-kpi-grid');
+      if (kpiGrid) {
+        kpiGrid.innerHTML = `
+          <div class="surface-card">
+            <span class="mini-stat-label">${escapeHtml(t('kpiTotal'))}</span>
+            <div class="kpi-val">${total}</div>
+          </div>
+          <div class="surface-card">
+            <span class="mini-stat-label">${escapeHtml(t('kpiTodo'))}</span>
+            <div class="kpi-val" style="color: var(--text-secondary);">${todo}</div>
+          </div>
+          <div class="surface-card">
+            <span class="mini-stat-label">${escapeHtml(t('kpiInProgress'))}</span>
+            <div class="kpi-val" style="color: var(--warning);">${inProg}</div>
+          </div>
+          <div class="surface-card">
+            <span class="mini-stat-label">${escapeHtml(t('kpiCompleted'))}</span>
+            <div class="kpi-val" style="color: var(--success);">${done}</div>
+          </div>
+          <div class="surface-card">
+            <span class="mini-stat-label">${escapeHtml(t('kpiUrgent'))}</span>
+            <div class="kpi-val" style="color: var(--danger);">${urgentHigh}</div>
+          </div>
+          <div class="surface-card">
+            <span class="mini-stat-label">${escapeHtml(t('kpiAvgProgress'))}</span>
+            <div class="kpi-val" style="color: var(--accent-hover);">${avg}%</div>
+            <div class="task-progress-track" style="margin-top: 8px; height: 6px;">
+              <div class="task-progress-fill" style="width: ${avg}%; background: var(--accent-hover);"></div>
+            </div>
+          </div>
+        `;
+      }
+
+      const statusChartWrap = document.getElementById('svg-status-chart-wrap');
+      if (statusChartWrap) {
+        const r = 40;
+        const circ = 2 * Math.PI * r;
+        const segDone = total > 0 ? (done / total) * circ : 0;
+        const segProg = total > 0 ? (inProg / total) * circ : 0;
+        const segTodo = total > 0 ? (todo / total) * circ : 0;
+
+        statusChartWrap.innerHTML = `
+          <svg class="svg-donut" viewBox="0 0 112 112" width="112" height="112" role="img" aria-label="Task status breakdown donut">
+            <circle cx="56" cy="56" r="${r}" fill="none" stroke="var(--bg-subtle)" stroke-width="12" />
+            ${total > 0 ? `
+              <circle cx="56" cy="56" r="${r}" fill="none" stroke="var(--success)" stroke-width="12"
+                stroke-dasharray="${segDone.toFixed(2)} ${circ.toFixed(2)}" stroke-dashoffset="0" transform="rotate(-90 56 56)" />
+              <circle cx="56" cy="56" r="${r}" fill="none" stroke="var(--warning)" stroke-width="12"
+                stroke-dasharray="${segProg.toFixed(2)} ${circ.toFixed(2)}" stroke-dashoffset="${(-segDone).toFixed(2)}" transform="rotate(-90 56 56)" />
+              <circle cx="56" cy="56" r="${r}" fill="none" stroke="var(--accent-hover)" stroke-width="12"
+                stroke-dasharray="${segTodo.toFixed(2)} ${circ.toFixed(2)}" stroke-dashoffset="${(-(segDone + segProg)).toFixed(2)}" transform="rotate(-90 56 56)" />
+            ` : ''}
+            <text x="56" y="61" text-anchor="middle" fill="var(--text-primary)" font-size="16" font-weight="900">${total}</text>
+          </svg>
+          <div style="flex: 1; min-width: 150px; display: flex; flex-direction: column; gap: 7px; font-size: 0.82rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="display: inline-flex; align-items: center; gap: 7px;"><span style="width:9px;height:9px;border-radius:99px;background:var(--success);display:inline-block;"></span>${escapeHtml(t('statusOptDone'))}</span>
+              <strong>${done}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="display: inline-flex; align-items: center; gap: 7px;"><span style="width:9px;height:9px;border-radius:99px;background:var(--warning);display:inline-block;"></span>${escapeHtml(t('statusOptProgress'))}</span>
+              <strong>${inProg}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="display: inline-flex; align-items: center; gap: 7px;"><span style="width:9px;height:9px;border-radius:99px;background:var(--accent-hover);display:inline-block;"></span>${escapeHtml(t('statusOptTodo'))}</span>
+              <strong>${todo}</strong>
+            </div>
+          </div>
+        `;
+      }
+
+      const prioChartWrap = document.getElementById('svg-priority-chart-wrap');
+      if (prioChartWrap) {
+        const levels = [
+          { key: 'urgent', color: 'var(--danger)' },
+          { key: 'high', color: 'var(--warning)' },
+          { key: 'normal', color: 'var(--accent-hover)' },
+          { key: 'low', color: 'var(--info)' }
+        ];
+        prioChartWrap.innerHTML = levels.map((lv) => {
+          const cnt = tasks.filter((item) => normalizePriority(item.priority) === lv.key).length;
+          const wPct = total > 0 ? Math.round((cnt / total) * 100) : 0;
+          return `
+            <div class="prio-bar-row">
+              <span style="font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(t(`prio_${lv.key}`))}</span>
+              <div class="prio-bar-track">
+                <div class="prio-bar-fill" style="width: ${wPct}%; background: ${lv.color};"></div>
+              </div>
+              <strong style="text-align: end;">${cnt}</strong>
+            </div>
+          `;
+        }).join('');
+      }
+
+      const lbEl = document.getElementById('admin-worker-leaderboard');
+      if (lbEl) {
+        if (appState.data.workers.length === 0) {
+          lbEl.innerHTML = `<div style="font-size: 0.84rem; color: var(--text-muted);">${escapeHtml(t('noWorkersYet'))}</div>`;
+        } else {
+          lbEl.innerHTML = appState.data.workers.map((w) => {
+            const m = computeWorkerMetrics(w.id);
+            return `
+              <div class="dash-task-row" style="background: var(--bg-elevated);">
+                <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1;">
+                  <div class="avatar-circle sm ${escapeHtml(w.color)}">${escapeHtml(getInitials(w.fullName))}</div>
+                  <div style="min-width: 0;">
+                    <div style="font-weight: 800; font-size: 0.86rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(w.fullName)}</div>
+                    <div style="font-size: 0.73rem; color: var(--text-muted);">${m.done}/${m.total} • ${m.avg}%</div>
+                  </div>
+                </div>
+                <button type="button" class="btn-secondary" style="min-height: 36px; padding: 6px 11px; font-size: 0.76rem;" onclick="selectWorker('${escapeHtml(w.id)}')">
+                  <span>${escapeHtml(t('btnOpenChat'))}</span>
+                </button>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      const fWorker = document.getElementById('dash-filter-worker')?.value || 'all';
+      const fPrio = document.getElementById('dash-filter-priority')?.value || 'all';
+      const fStatus = document.getElementById('dash-filter-status')?.value || 'all';
+      const sortBy = document.getElementById('dash-sort-by')?.value || 'recent';
+
+      const filteredTasks = tasks.filter((item) => {
+        if (fWorker !== 'all' && item.workerId !== fWorker) return false;
+        if (fPrio !== 'all' && normalizePriority(item.priority) !== fPrio) return false;
+        const p = clampPct(item.progress);
+        if (fStatus === 'todo' && p !== 0) return false;
+        if (fStatus === 'progress' && (p === 0 || p === 100)) return false;
+        if (fStatus === 'done' && p !== 100) return false;
+        return true;
+      });
+
+      filteredTasks.sort((a, b) => {
+        if (sortBy === 'priority') {
+          return (PRIORITY_ORDER[normalizePriority(b.priority)] || 2) - (PRIORITY_ORDER[normalizePriority(a.priority)] || 2);
+        }
+        if (sortBy === 'pct_asc') return clampPct(a.progress) - clampPct(b.progress);
+        if (sortBy === 'pct_desc') return clampPct(b.progress) - clampPct(a.progress);
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+
+      const countSpan = document.getElementById('dash-tasks-count');
+      if (countSpan) countSpan.textContent = String(filteredTasks.length);
+
+      const container = document.getElementById('dash-tasks-container');
+      if (!container) return;
+
+      if (filteredTasks.length === 0) {
+        container.innerHTML = `<div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">${escapeHtml(t('noMatchingTasks'))}</div>`;
+        return;
+      }
+
+      if (appState.dashboardMode === 'grouped') {
+        const groupedIds = [...new Set(filteredTasks.map((x) => x.workerId))];
+        container.innerHTML = groupedIds.map((wId) => {
+          const w = getWorkerById(wId);
+          const wName = w ? w.fullName : wId;
+          const wTasks = filteredTasks.filter((x) => x.workerId === wId);
+          return `
+            <div class="surface-card" style="background: var(--bg-elevated); padding: 12px;">
+              <div style="font-weight: 800; font-size: 0.9rem; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+                <span>${escapeHtml(wName)}</span>
+                <span class="prio-badge normal">${wTasks.length}</span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                ${wTasks.map((item) => renderDashboardTaskRow(item, w)).join('')}
+              </div>
+            </div>
+          `;
+        }).join('');
+      } else {
+        container.innerHTML = filteredTasks.map((item) => renderDashboardTaskRow(item, getWorkerById(item.workerId))).join('');
+      }
+    }
+
+    function renderDashboardTaskRow(item, worker) {
+      const pct = clampPct(item.progress);
+      const isDone = pct === 100;
+      const prio = normalizePriority(item.priority);
+      const barColor = isDone ? 'var(--success)' : (prio === 'urgent' ? 'var(--danger)' : 'var(--accent-hover)');
+
+      return `
+        <div class="dash-task-row">
+          <div class="dash-task-main">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 4px;">
+              <span class="prio-badge ${prio}">${escapeHtml(t(`prio_${prio}`))}</span>
+              <span class="status-badge ${isDone ? 'done' : (pct > 0 ? 'progress' : 'todo')}">${pct}%</span>
+              <span style="font-size: 0.76rem; font-weight: 700; color: var(--text-secondary);">${escapeHtml(worker ? worker.fullName : '—')}</span>
+            </div>
+            <div style="font-weight: 800; font-size: 0.92rem;">${escapeHtml(item.title)}</div>
+            ${item.description ? `<div style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 2px;">${escapeHtml(item.description)}</div>` : ''}
+          </div>
+
+          <div class="dash-task-progress-col">
+            <div style="display: flex; justify-content: space-between; font-size: 0.74rem; font-weight: 800; margin-bottom: 4px;">
+              <span>🔒 ${escapeHtml(t('progressLabel'))}</span>
+              <span>${pct}%</span>
+            </div>
+            <div class="task-progress-track">
+              <div class="task-progress-fill" style="width: ${pct}%; background: ${barColor};"></div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <button type="button" class="btn-secondary" style="min-height: 36px; padding: 6px 10px; font-size: 0.76rem;" onclick="selectWorker('${escapeHtml(item.workerId)}')">${escapeHtml(t('btnOpenChat'))}</button>
+            <button type="button" class="icon-btn" style="min-height: 36px; min-width: 36px; padding: 0;" onclick="openEditTaskModal('${escapeHtml(item.id)}')" aria-label="${escapeHtml(t('btnEdit'))}">✎</button>
+            <button type="button" class="icon-btn" style="min-height: 36px; min-width: 36px; padding: 0; color: var(--danger);" onclick="openDeleteTaskModal('${escapeHtml(item.id)}')" aria-label="${escapeHtml(t('btnDelete'))}">🗑</button>
+          </div>
+        </div>
+      `;
+    }
+
+    /* =====================================================================
+       8. MODALS, CRUD & STATE RESET
+       ===================================================================== */
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
+    }
+
+    function selectWorkerColor(colorCls) {
+      document.getElementById('worker-selected-color').value = colorCls;
+      document.querySelectorAll('#worker-color-picker button').forEach((btn) => {
+        const active = btn.getAttribute('data-color') === colorCls;
+        btn.style.borderColor = active ? 'var(--text-primary)' : 'transparent';
+        btn.style.transform = active ? 'scale(1.1)' : 'scale(1)';
+      });
+    }
+
+    function generateRandomCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let code = 'WLF';
+      for (let i = 0; i < 4; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      document.getElementById('worker-code').value = code;
+    }
+
+    function openWorkerModal() {
+      document.getElementById('worker-edit-id').value = '';
+      document.getElementById('worker-fullname').value = '';
+      document.getElementById('worker-role').value = '';
+      document.getElementById('worker-username').value = '';
+      document.getElementById('worker-code').value = '';
+      selectWorkerColor('color-av-cyan');
+      setText('worker-modal-title', t('modalNewWorker'));
+      setText('btn-w-submit', t('btnSave'));
+      openModal('worker-modal');
+    }
+
+    function openEditWorkerModal() {
+      const w = getWorkerById(appState.selectedWorkerId);
+      if (!w) return;
+      document.getElementById('worker-edit-id').value = w.id;
+      document.getElementById('worker-fullname').value = w.fullName;
+      document.getElementById('worker-role').value = w.role;
+      document.getElementById('worker-username').value = w.username;
+      document.getElementById('worker-code').value = w.code;
+      selectWorkerColor(w.color || 'color-av-cyan');
+      setText('worker-modal-title', t('modalEditWorker'));
+      setText('btn-w-submit', t('btnSave'));
+      openModal('worker-modal');
+    }
+
+    function saveWorkerProfile(event) {
+      event.preventDefault();
+      if (appState.session?.role !== 'admin') return;
+
+      const editId = document.getElementById('worker-edit-id').value.trim();
+      const fullName = document.getElementById('worker-fullname').value.trim();
+      const role = document.getElementById('worker-role').value.trim();
+      const username = document.getElementById('worker-username').value.trim();
+      const code = document.getElementById('worker-code').value.trim();
+      const color = document.getElementById('worker-selected-color').value || 'color-av-cyan';
+
+      if (!fullName || !role || !username || !code) return;
+
+      if (username === SUPER_ADMIN.username || appState.data.workers.some((w) => w.username === username && w.id !== editId)) {
+        showToast(t('errUsernameTaken'), 'error');
+        return;
+      }
+
+      if (editId) {
+        const w = getWorkerById(editId);
+        if (w) {
+          w.fullName = fullName;
+          w.role = role;
+          w.username = username;
+          w.code = code;
+          w.color = color;
+        }
+        savePersistedData();
+        closeModal('worker-modal');
+        renderAuthenticatedApp();
+        showToast(t('toastWorkerUpdated'), 'success');
+      } else {
+        const newId = 'wrk-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
+        appState.data.workers.push({
+          id: newId,
+          fullName,
+          role,
+          username,
+          code,
+          color,
+          privateNotes: '',
+          createdAt: new Date().toISOString()
+        });
+        appState.selectedWorkerId = newId;
+        savePersistedData();
+        closeModal('worker-modal');
+        renderAuthenticatedApp();
+        showToast(t('toastWorkerCreated', { name: fullName }), 'success');
+      }
+    }
+
+    function openDeleteWorkerModal() {
+      const w = getWorkerById(appState.selectedWorkerId);
+      if (!w) return;
+      setText('del-worker-title', t('delWorkerTitle', { name: w.fullName }));
+      setText('del-worker-desc', t('delWorkerDesc'));
+      openModal('delete-worker-modal');
+    }
+
+    function confirmDeleteWorker() {
+      if (appState.session?.role !== 'admin' || !appState.selectedWorkerId) return;
+      const targetId = appState.selectedWorkerId;
+      appState.data.workers = appState.data.workers.filter((w) => w.id !== targetId);
+      appState.data.items = appState.data.items.filter((i) => i.workerId !== targetId);
+      appState.selectedWorkerId = appState.data.workers.length > 0 ? appState.data.workers[0].id : null;
+      savePersistedData();
+      closeModal('delete-worker-modal');
+      renderAuthenticatedApp();
+      showToast(t('toastWorkerDeleted'), 'info');
+    }
+
+    function openTaskModal() {
+      const w = getWorkerById(appState.selectedWorkerId);
+      if (!w) return;
+      syncSelectOptions();
+      document.getElementById('task-edit-id').value = '';
+      document.getElementById('task-title-input').value = '';
+      document.getElementById('task-desc-input').value = '';
+      document.getElementById('task-deadline-input').value = '';
+      const quickPrio = normalizePriority(document.getElementById('composer-quick-priority')?.value);
+      document.getElementById('task-priority-input').value = quickPrio;
+      setText('task-modal-title', t('modalNewTask', { name: w.fullName }));
+      setText('btn-t-submit', t('btnSendTask'));
+      openModal('task-modal');
+    }
+
+    function openEditTaskModal(taskId) {
+      const task = appState.data.items.find((i) => i.id === taskId && i.type === 'task');
+      if (!task) return;
+      syncSelectOptions();
+      document.getElementById('task-edit-id').value = task.id;
+      document.getElementById('task-title-input').value = task.title;
+      document.getElementById('task-desc-input').value = task.description || '';
+      document.getElementById('task-priority-input').value = normalizePriority(task.priority);
+      document.getElementById('task-deadline-input').value = task.deadline || '';
+      setText('task-modal-title', t('modalEditTask'));
+      setText('btn-t-submit', t('btnSave'));
+      openModal('task-modal');
+    }
+
+    function saveTaskBubble(event) {
+      event.preventDefault();
+      if (appState.session?.role !== 'admin' || !appState.selectedWorkerId) return;
+
+      const editId = document.getElementById('task-edit-id').value.trim();
+      const title = document.getElementById('task-title-input').value.trim();
+      const description = document.getElementById('task-desc-input').value.trim();
+      const priority = normalizePriority(document.getElementById('task-priority-input').value);
+      const deadline = document.getElementById('task-deadline-input').value || '';
+
+      if (!title) {
+        showToast(t('errTaskTitleRequired'), 'error');
+        return;
+      }
+
+      if (editId) {
+        const task = appState.data.items.find((i) => i.id === editId && i.type === 'task');
+        if (task) {
+          task.title = title;
+          task.description = description;
+          task.priority = priority;
+          task.deadline = deadline;
+        }
+        savePersistedData();
+        closeModal('task-modal');
+        renderAuthenticatedApp();
+        showToast(t('toastTaskUpdated'), 'success');
+      } else {
+        appState.data.items.push({
+          id: 'tsk-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+          workerId: appState.selectedWorkerId,
+          type: 'task',
+          senderRole: 'admin',
+          title,
+          description,
+          priority,
+          deadline,
+          progress: 0,
+          createdAt: new Date().toISOString()
+        });
+        savePersistedData();
+        closeModal('task-modal');
+        renderAuthenticatedApp();
+        showToast(t('toastTaskCreated'), 'success');
+      }
+    }
+
+    function openDeleteTaskModal(taskId) {
+      document.getElementById('delete-task-target-id').value = taskId;
+      setText('del-task-title', t('delTaskTitle'));
+      setText('del-task-desc', t('delTaskDesc'));
+      openModal('delete-task-modal');
+    }
+
+    function confirmDeleteTask() {
+      if (appState.session?.role !== 'admin') return;
+      const taskId = document.getElementById('delete-task-target-id').value;
+      appState.data.items = appState.data.items.filter((i) => i.id !== taskId);
+      savePersistedData();
+      closeModal('delete-task-modal');
+      renderAuthenticatedApp();
+      showToast(t('toastTaskDeleted'), 'info');
+    }
+
+    function openResetStateModal() {
+      setText('reset-modal-title', t('resetTitle'));
+      setText('reset-modal-desc', t('resetDesc'));
+      openModal('reset-state-modal');
+    }
+
+    function confirmResetState() {
+      safeRemove(STORAGE_KEY);
+      appState.data = { workers: [], items: [] };
+      appState.selectedWorkerId = null;
+      closeModal('reset-state-modal');
+      closeMobileSidebar();
+      if (appState.session) {
+        renderAuthenticatedApp();
+      }
+      showToast(t('toastStateReset'), 'info');
+    }
+
+    function openNotesModal() {
+      const w = getWorkerById(appState.selectedWorkerId);
+      if (!w) return;
+      setText('notes-modal-title', t('notesTitle', { name: w.fullName }));
+      document.getElementById('private-notes-textarea').value = w.privateNotes || '';
+      openModal('notes-modal');
+    }
+
+    function savePrivateNotes() {
+      const w = getWorkerById(appState.selectedWorkerId);
+      if (!w) return;
+      w.privateNotes = document.getElementById('private-notes-textarea').value || '';
+      savePersistedData();
+      closeModal('notes-modal');
+      showToast(t('toastNotesSaved'), 'success');
+    }
+
+    /* =====================================================================
+       9. JSON BACKUP / RESTORE & TOAST NOTIFICATIONS
+       ===================================================================== */
+    function exportBackupJSON() {
+      try {
+        const payload = {
+          app: 'WOLF TEAM',
+          exportedAt: new Date().toISOString(),
+          workers: appState.data.workers,
+          items: appState.data.items
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `wolfteam-backup-${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+        showToast(t('toastBackupSaved'), 'success');
+      } catch (err) {
+        console.error('Export JSON error:', err);
+        showToast(t('toastBackupInvalid'), 'error');
+      }
+    }
+
+    function importBackupJSON(event) {
+      const file = event.target?.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(String(reader.result || '{}'));
+          if (!Array.isArray(parsed.workers) || !Array.isArray(parsed.items)) {
+            showToast(t('toastBackupInvalid'), 'error');
+            return;
+          }
+          safeSet(STORAGE_KEY, JSON.stringify({ workers: parsed.workers, items: parsed.items }));
+          loadPersistedData();
+          appState.selectedWorkerId = appState.data.workers.length > 0 ? appState.data.workers[0].id : null;
+          renderAuthenticatedApp();
+          showToast(t('toastBackupRestored'), 'success');
+        } catch {
+          showToast(t('toastBackupInvalid'), 'error');
+        } finally {
+          event.target.value = '';
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const item = document.createElement('div');
+      item.className = `toast-item ${type}`;
+      const iconChar = type === 'success' ? '✓' : (type === 'error' ? '!' : 'i');
+      item.innerHTML = `<span style="font-weight:900;">${iconChar}</span><span>${escapeHtml(message)}</span>`;
+      container.appendChild(item);
+      setTimeout(() => {
+        item.remove();
+      }, 3400);
+    }
+
+    /* =====================================================================
+       10. SAFE STARTUP WITH GUARANTEED VISIBLE FALLBACK
+       ===================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      try {
+        applyDynamicFavicon();
+        loadPersistedData();
+        initThemeAndLang();
+
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) loginForm.addEventListener('submit', handleLoginSubmit);
+
+        const msgForm = document.getElementById('send-message-form');
+        if (msgForm) msgForm.addEventListener('submit', handleSendMessage);
+      } catch (err) {
+        console.error('Startup error:', err);
+        const banner = document.getElementById('boot-error-banner');
+        if (banner) {
+          banner.textContent = `WOLF TEAM safe fallback: ${err && err.message ? err.message : 'Unexpected startup error'}`;
+          banner.classList.remove('hidden');
+        }
+        const loginView = document.getElementById('login-view');
+        if (loginView) loginView.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
